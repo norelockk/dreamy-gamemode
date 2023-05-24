@@ -19,6 +19,7 @@ model Account {
   id Int @id @default(autoincrement())
 
   role       AccountRolesEnum @default(value: USER)
+  bw         BigInt           @default(0)
   jail       BigInt           @default(0)
   money      BigInt           @default(0)
   health     Float            @default(100.00)
