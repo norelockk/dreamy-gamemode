@@ -24,7 +24,7 @@ model Account {
   playtime BigInt?          @default(0)
 
   email    String @unique
-  serial   String @unique
+  serial   String
   username String @unique
   password String
 
