@@ -7,6 +7,6 @@ local PERMISSIONS = {
   }
 }
 
-function hasPermission(permission, role)
+function hasRolePermission(permission, role)
   return PERMISSIONS[permission][role] or false
 end

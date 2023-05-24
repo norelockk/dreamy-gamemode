@@ -3,7 +3,7 @@
   <script src='permissions.lua' type='shared' />
 
   <!-- shared: exports -->
-  <export function='hasPermission' type='shared' />
+  <export function='hasRolePermission' type='shared' />
 
   <!-- server-side -->
   <script src='server/duty.lua' type='server' />
