@@ -21,6 +21,7 @@ model Account {
   role   AccountRolesEnum @default(value: USER)
   banned Boolean?         @default(false)
   online Boolean?         @default(false)
+  playtime BigInt?        @default(0)
 
   email    String @unique
   serial   String @unique
