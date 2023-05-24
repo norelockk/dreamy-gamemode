@@ -133,10 +133,12 @@ function loginGameAccount(client, data)
     if passwordHashVaild then
       for key, value in pairs(_data) do setElementData(client, key, value) end
       if not name == account.username then setPlayerName(client, account.username) end
-      if not account.wanted == 0 then setPlayerWantedLevel(client, account.wanted) end
-      if not account.bw == 0 then
-        -- bw system there
-      end
+
+      -- TODO: implement that shit in various resources
+      -- if not account.wanted == 0 then setPlayerWantedLevel(client, account.wanted) end
+      -- if not account.bw == 0 then
+      --   -- bw system there
+      -- end
 
       triggerEvent('api:onPlayerLogged', resourceRoot, client, _data)
 
