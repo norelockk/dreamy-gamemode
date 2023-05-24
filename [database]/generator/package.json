@@ -1,0 +1,11 @@
+{
+  "name": "generator",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@prisma/client": "^4.14.1",
+    "mysql2": "^3.3.2",
+    "prisma": "^4.14.1"
+  }
+}

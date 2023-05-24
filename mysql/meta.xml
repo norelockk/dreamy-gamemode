@@ -1,0 +1,8 @@
+<meta>
+  <script src='server.lua' type='server' />
+
+  <!-- functions -->
+  <export function='query' type='server' />
+  <export function='queryFree' type='server' />
+  <export function='queryAsync' type='server' />
+</meta>

@@ -1,0 +1,8 @@
+<meta>
+  <!-- client-side scripts -->
+  <script src='client/playtime.lua' type='client' cache='false' />
+
+  <!-- server-side scripts -->
+  <script src='server/id.lua' type='server' />
+  <script src='server/playtime.lua' type='server' />
+</meta>
