@@ -190,3 +190,31 @@ function refreshGamePlayersStatus()
     end
   end
 end
+
+function savePlayerAccount(player)
+  if not player or not getElementType(player) == 'player' then return false end
+
+  local logged = getElementData(player, 'player:logged')
+  if not logged then return false end
+
+  local accountId = getElementData(player, 'player:account_id')
+  if not accountId or not type(accountId) == 'number' then return false end
+
+  -- data
+  local playtime = getElementData(player, 'player:play_time') or 0
+
+  -- save whole data
+  local updated = MYSQL:queryFree(
+    'UPDATE `account` SET `playtime` = ? WHERE `id` = ?',
+    playtime,
+    accountId
+  )
+
+  if updated then
+    print(string.format('Account of player %s has been saved', getPlayerName(player)))
+
+    return true
+  end
+
+  return false
+end
