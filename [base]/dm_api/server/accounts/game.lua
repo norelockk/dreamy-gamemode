@@ -120,6 +120,7 @@ function loginGameAccount(client, data)
       ['player:role'] = account.role,
       ['player:logged'] = true,
       ['player:spawned'] = false,
+      ['player:play_time'] = account.playtime,
       ['player:account_id'] = account.id
     }
 
