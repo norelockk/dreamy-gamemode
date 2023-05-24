@@ -118,24 +118,23 @@ function loginGameAccount(client, data)
     -- elements data to set
     local _data = {
       ['player:role'] = account.role,
+      ['player:jail'] = account.jail,
+      ['player:wanted'] = account.wanted,
       ['player:logged'] = true,
       ['player:spawned'] = false,
       ['player:play_time'] = account.playtime,
+      ['player:reputation'] = account.reputation,
       ['player:account_id'] = account.id
     }
 
     local passwordHashVaild = passwordVerify(data.password, account.password)
 
     if passwordHashVaild then
-      for key, value in pairs(_data) do
-        setElementData(client, key, value)
-      end
+      for key, value in pairs(_data) do setElementData(client, key, value) end
+      if not name == account.username then setPlayerName(client, account.username) end
+      if not account.wanted == 0 then setPlayerWantedLevel(client, account.wanted) end
 
-      if not name == account.username then
-        setPlayerName(client, account.username)
-      end
-
-      triggerEvent('api:onPlayerLogged', resourceRoot, client)
+      triggerEvent('api:onPlayerLogged', resourceRoot, client, _data)
 
       return 'CLIENT_LOGIN_SUCCESS'
     else return 'CLIENT_ACCOUNT_INVALID_PASSWORD' end
