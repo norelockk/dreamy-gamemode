@@ -24,6 +24,8 @@ function registerFonts()
   for fontName, fontData in pairs(fonts) do
     if not isElement(fonts[fontName]) then
       if fileExists(fontData.path) then
+        print('custom font registered', fontName)
+
         fonts[fontName] = dxCreateFont(fontData.path, fontData.size, false, 'antialiased')
       end
     end
