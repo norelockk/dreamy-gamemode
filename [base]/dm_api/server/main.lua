@@ -45,4 +45,5 @@ local function start()
   addEventHandler('onPlayerQuit', root, quit)
   addEventHandler('api:onPlayerLogged', root, logged)
 end
+addEventHandler('onResourceStop', resourceRoot, stop)
 addEventHandler('onResourceStart', resourceRoot, start)
