@@ -17,13 +17,12 @@ local MAX_ACCOUNTS_PER_SERIAL = 2
 addEvent('api:onPlayerLogged', true)
 
 -- resources
+local CORE = exports.dm_core
 local MYSQL = exports.mysql
 
 -- creating account
 function createGameAccount(client, data)
-  if not client or not getElementType(client) == 'player' then
-    return 'GAME_CLIENT_UNIDENTIFIED'
-  end
+  if not client or not getElementType(client) == 'player' then return 'GAME_CLIENT_UNIDENTIFIED' end
 
   -- gathering current player data
   local serial = getPlayerSerial(client)
@@ -86,9 +85,7 @@ end
 
 -- logging into account
 function loginGameAccount(client, data)
-  if not client or not getElementType(client) == 'player' then
-    return 'GAME_CLIENT_UNIDENTIFIED'
-  end
+  if not client or not getElementType(client) == 'player' then return 'GAME_CLIENT_UNIDENTIFIED' end
 
   -- gathering current player data
   local accountId = getElementData(client, 'player:account_id')
@@ -120,10 +117,11 @@ function loginGameAccount(client, data)
       ['player:bw'] = account.bw,
       ['player:role'] = account.role,
       ['player:jail'] = account.jail,
-      ['player:wanted'] = account.wanted,
+      ['player:wanted'] = account.wanted ~= 0,
       ['player:logged'] = true,
       ['player:spawned'] = false,
-      ['player:play_time'] = account.playtime,
+      ['player:warnings'] = account.warnings,
+      ['player:playtime'] = account.playtime,
       ['player:reputation'] = account.reputation,
       ['player:account_id'] = account.id
     }
@@ -131,16 +129,18 @@ function loginGameAccount(client, data)
     local passwordHashVaild = passwordVerify(data.password, account.password)
 
     if passwordHashVaild then
-      for key, value in pairs(_data) do setElementData(client, key, value) end
-      if not name == account.username then setPlayerName(client, account.username) end
+      if account.bw ~= 0 then
+        
+      end
 
-      -- TODO: implement that shit in various resources
-      -- if not account.wanted == 0 then setPlayerWantedLevel(client, account.wanted) end
-      -- if not account.bw == 0 then
-      --   -- bw system there
-      -- end
-
-      triggerEvent('api:onPlayerLogged', resourceRoot, client, _data)
+      if account.wanted ~= 0 then setPlayerWantedLevel(client, account.wanted) end
+      if name ~= account.username then setPlayerName(client, account.username) end
+      
+      for key, value in pairs(_data) do
+        setElementData(client, key, value)
+      end
+      
+      triggerEvent('api:onPlayerLogged', resourceRoot, client)
 
       return 'CLIENT_LOGIN_SUCCESS'
     else return 'CLIENT_ACCOUNT_INVALID_PASSWORD' end
@@ -197,6 +197,7 @@ function refreshGamePlayersStatus()
   end
 end
 
+-- saving player account data
 function savePlayerAccount(player)
   if not player or not getElementType(player) == 'player' then return false end
 
@@ -207,17 +208,23 @@ function savePlayerAccount(player)
   if not accountId or not type(accountId) == 'number' then return false end
 
   -- data
-  local playtime = getElementData(player, 'player:play_time') or 0
+  local bw = getElementData(player, 'player:bw')
+  local jail = getElementData(player, 'player:jail')
+  local money = CORE:getGamePlayerMoney(player)
+  local health = getElementHealth(player)
+  local wanted = getPlayerWantedLevel(player)
+  local warnings = getElementData(player, 'player:warnings')
+  local playtime = getElementData(player, 'player:playtime')
+  local reputation = getElementData(player, 'player:reputation')
 
-  -- save whole data
   local updated = MYSQL:queryFree(
-    'UPDATE `account` SET `playtime` = ? WHERE `id` = ?',
-    playtime,
+    'UPDATE `account` SET `bw` = ?, `jail` = ?, `money` = ?, `warnings` = ?, `playtime` = ?, `health` = ?, `wanted` = ?, `reputation` = ?, `updatedAt` = CURRENT_TIME() WHERE `id` = ?',
+    bw, jail, money, warnings, playtime, health, wanted, reputation,
     accountId
   )
 
   if updated then
-    print(string.format('Account of player %s has been saved', getPlayerName(player)))
+    print('account updated', accountId)
 
     return true
   end

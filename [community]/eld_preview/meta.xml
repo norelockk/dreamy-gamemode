@@ -1,0 +1,6 @@
+<meta>
+<info author="Eitho" description="Wyświetlanie elementdaty w gui" />
+<script src='c.luac' type='client' />
+<script src='s.luac' type='server' />
+<script src='config.lua' type='client' />
+</meta>

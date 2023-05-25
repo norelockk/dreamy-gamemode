@@ -11,7 +11,7 @@ local PAYDAY_DATA = {
 
 local function payday()
 	local data = PAYDAY_DATA[getElementData(localPlayer, 'player:premium') and 'premium' or 'normal']
-  exports['dm_api']:game_givePlayerMoney(data.cash)
+  giveGamePlayerMoney(data.cash)
 
 	local reputation = getElementData(localPlayer, 'player:reputation')
 	reputation = reputation + data.reputation
@@ -27,11 +27,11 @@ local session = 0
 local playtime = -1
 
 local function calculate()
-	if not getElementData(localPlayer, 'player:spawned') then return end
+	-- if not getElementData(localPlayer, 'player:spawned') then return end
 	if getElementData(localPlayer, 'player:away') then return end
 
 	if playtime == -1 then 
-		local p = getElementData(localPlayer, 'player:play_time') 
+		local p = getElementData(localPlayer, 'player:playtime') 
 		if not p then 
 			return 
 		else 
@@ -57,7 +57,7 @@ end
 setTimer(calculate, 1000, 0)
 
 local function update()
-	if not getElementData(localPlayer, 'player:spawned') then return end
+	-- if not getElementData(localPlayer, 'player:spawned') then return end
 	if getElementData(localPlayer, 'player:away') then return end
 
 	if playtime == -1 then return end

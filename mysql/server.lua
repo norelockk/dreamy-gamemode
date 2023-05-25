@@ -52,7 +52,7 @@ function queryFree(...)
   local safe = dbPrepareString(connection, ...)
 
   if safe then
-    local query = dbQuery(connection, safe)
+    local query = dbExec(connection, safe)
 
     if not query then
       print(string.format('%s: %s', 'Error while free querying', 'mysql', select(1, ...)))
