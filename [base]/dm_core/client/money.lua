@@ -4,7 +4,7 @@ end
 
 function giveGamePlayerMoney(money, isPremium)
 	triggerServerEvent('core:onPlayerGiveMoney', resourceRoot, localPlayer, money, isPremium, getGamePlayerMoney())
-end 
+end
 
 function takeGamePlayerMoney(money)
 	triggerServerEvent('core:onPlayerTakeMoney', resourceRoot, localPlayer, money, getGamePlayerMoney())

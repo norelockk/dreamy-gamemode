@@ -16,11 +16,6 @@ local function payday()
 	local reputation = getElementData(localPlayer, 'player:reputation')
 	reputation = reputation + data.reputation
 	setElementData(localPlayer, 'player:reputation', reputation)
-	
-	-- exports['bnl_radar']:addNotification(
-  --   'success',
-  --   string.format('Otrzymujesz %d$ oraz %d %s reputacji za godzinę gry na serwerze!', data.cash, data.reputation, data.reputation == 1 and 'punkt' or 'punkty')
-  -- )
 end 
 
 local session = 0 

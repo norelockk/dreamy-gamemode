@@ -1,3 +1,4 @@
+
 addEvent('core:onPlayerUpdatePlaytime', true)
 addEventHandler('core:onPlayerUpdatePlaytime', resourceRoot, function(playtime, session)
 	setElementData(client, 'player:playtime', playtime, false)

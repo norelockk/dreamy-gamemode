@@ -49,9 +49,7 @@ function giveGamePlayerMoney(player, money, isPremium, clientMoney)
 	end
 	
 	return false
-end 
-addEvent('core:onPlayerGiveMoney', true)
-addEventHandler('core:onPlayerGiveMoney', resourceRoot, giveGamePlayerMoney)
+end
 
 function takeGamePlayerMoney(player, money, clientMoney)
 	if isElement(player) and getElementType(player) == 'player' and type(money) == 'number' and money > 0 then
@@ -67,5 +65,8 @@ function takeGamePlayerMoney(player, money, clientMoney)
 	
 	return false
 end
+
 addEvent('core:onPlayerTakeMoney', true)
+addEvent('core:onPlayerGiveMoney', true)
 addEventHandler('core:onPlayerTakeMoney', resourceRoot, takeGamePlayerMoney)
+addEventHandler('core:onPlayerGiveMoney', resourceRoot, giveGamePlayerMoney)
