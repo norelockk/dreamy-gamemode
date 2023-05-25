@@ -1,0 +1,17 @@
+<meta>
+  <download_priority_group>1</download_priority_group>
+
+  <!-- assets -->
+  <file src='assets/fonts/bold.ttf' />
+  <file src='assets/fonts/light.ttf' />
+  <file src='assets/fonts/medium.ttf' />
+  <file src='assets/fonts/regular.ttf' />
+  <file src='assets/fonts/semibold.ttf' />
+
+  <!-- scripts --> 
+  <script src='client/fonts.lua' type='client' cache='false' />
+  <script src='client/main.lua' type='client' cache='false' />
+
+  <!-- exports -->
+  <export function='getUIFont' type='client' />
+</meta>
