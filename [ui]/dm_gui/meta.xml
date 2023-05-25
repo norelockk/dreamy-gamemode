@@ -7,6 +7,8 @@
   <file src='assets/fonts/medium.ttf' />
   <file src='assets/fonts/regular.ttf' />
   <file src='assets/fonts/semibold.ttf' />
+  <file src='assets/sounds/click.ogg' />
+  <file src='assets/sounds/hover.ogg' />
 
   <!-- scripts --> 
   <script src='client/fonts.lua' type='client' cache='false' />
