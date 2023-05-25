@@ -2,10 +2,10 @@
   <!-- utils -->
   <script src='utils.lua' type='shared' cache='false' />
 
-  <!-- account management -->
-  <script src='server/accounts/game.lua' type='server' />
+  <!-- accounts -->
+  <script src='server/accounts.lua' type='server' />
 
-  <!-- exports: account management (with in-game stuff hehe) -->
+  <!-- exports: accounts -->
   <export function='loginGameAccount' type='server' />
   <export function='createGameAccount' type='server' />
   <export function='findPlayerByAccountId' type='server' />
