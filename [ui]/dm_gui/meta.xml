@@ -10,10 +10,42 @@
   <file src='assets/sounds/click.ogg' />
   <file src='assets/sounds/hover.ogg' />
 
-  <!-- scripts --> 
+  <!-- scripts -->
+  <script src='client/libs/animations.lua' type='client' cache='false' />
   <script src='client/fonts.lua' type='client' cache='false' />
+  <script src='client/buttons.lua' type='client' cache='false' />
+  <script src='client/edit.lua' type='client' cache='false' />
   <script src='client/main.lua' type='client' cache='false' />
 
   <!-- exports -->
   <export function='getUIFont' type='client' />
+  
+  <export function='createButton' type='client' />
+  <export function='destroyButton' type='client' />
+  <export function='getButtonSize' type='client' />
+  <export function='getButtonPosition' type='client' />
+  <export function='isButtonEnabled' type='client' />
+  <export function='isButtonHovered' type='client' />
+  <export function='isButtonClicked' type='client' />
+  <export function='setButtonFont' type='client' />
+  <export function='setButtonSize' type='client' />
+  <export function='setButtonAlpha' type='client' />
+  <export function='setButtonEnabled' type='client' />
+  <export function='setButtonPosition' type='client' />
+
+  <export function="createEditbox" type="client" />
+	<export function="setEditboxMaxLength" type="client" />
+	<export function="destroyEditbox" type="client" />
+	<export function="setEditboxText" type="client" />
+	<export function="getEditboxText" type="client" />
+	<export function="setEditboxHelperText" type="client" />
+	<export function="setEditboxImage" type="client" />
+	<export function="setEditboxLine" type="client" />
+	<export function="setEditboxMasked" type="client" />
+	<export function="setEditboxAlpha" type="client" />
+	<export function="setEditboxASCIIMode" type="client" />
+	<export function="setEditboxNumberMode" type="client" />
+	<export function="setEditboxPosition" type="client" />
+	<export function="setEditboxSpace" type="client" />
+	<export function="isEditboxActive" type="client" />
 </meta>

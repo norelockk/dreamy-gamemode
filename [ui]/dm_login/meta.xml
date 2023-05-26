@@ -1,9 +1,17 @@
 <meta>
   <!-- assets -->
   <file src='assets/sounds/isometric.mp3' />
+  <file src='assets/images/logo.png' />
 
   <!-- client-side -->
   <script src='client/animations.lua' type='client' cache='false' />
+
+  <!-- music -->
+  <script src='client/music.lua' type='client' cache='false' />
+
+  <!-- interfaces -->
+  <script src='client/ui/login.lua' type='client' cache='false' />
+
   <script src='client/camera.lua' type='client' cache='false' />
   <script src='client/main.lua' type='client' cache='false' />
 </meta>

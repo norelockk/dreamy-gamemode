@@ -5,18 +5,104 @@ local zoom = 1920 / screen.x
 -- ui
 local UI = exports.dm_gui
 
+-- event listeners
+addEvent('login:onClientSwitchInterface', true)
+
 -- vars
 local fonts = {}
-local sound = false
 local gAlpha = 0
 local showing = false
+local offsetX = -300
 local textures = {}
 local animations = {}
 local interfaces = {}
+local sidebarWidth = 0
+local interfaceAlpha = 0
+local activeInterface = nil
 
 -- functions
-function renderUi()
+function switchInterface(name)
+  if activeInterface == name then return end
 
+  if name == 'none' then
+    if not animations.interfaceOffsetX and not animations.interfaceAlpha then
+      animations.interfaceOffsetX = createAnimation(offsetX, -300, 'InOutQuad', 1200,
+        function(x)
+          offsetX = x
+        end,
+        function()
+          deleteAnimation(animations.interfaceOffsetX)
+          animations.interfaceOffsetX = false
+        end
+      )
+
+      animations.interfaceAlpha = createAnimation(interfaceAlpha, 0, 'InOutQuad', 1200,
+        function(x)
+          interfaceAlpha = x
+        end,
+        function()
+          deleteAnimation(animations.interfaceAlpha)
+          animations.interfaceAlpha = false
+        end
+      )
+    end
+
+    return
+  end
+
+  if activeInterface == nil then
+    activeInterface = name
+
+    if not animations.interfaceOffsetX and not animations.interfaceAlpha then
+      animations.interfaceOffsetX = createAnimation(offsetX, 5, 'InOutQuad', 1200,
+        function(x)
+          offsetX = x
+        end,
+        function()
+          deleteAnimation(animations.interfaceOffsetX)
+          animations.interfaceOffsetX = false
+        end
+      )
+
+      animations.interfaceAlpha = createAnimation(interfaceAlpha, 1, 'InOutQuad', 1200,
+        function(x)
+          interfaceAlpha = x
+        end,
+        function()
+          deleteAnimation(animations.interfaceAlpha)
+          animations.interfaceAlpha = false
+        end
+      )
+    end
+  end
+end
+
+function destroyCurrentInterface()
+  local currentUi = interfaces[activeInterface]
+  if not currentUi then return end
+
+  if currentUi.destroy then
+    currentUi.destroy()
+  end
+end
+
+function renderUi()
+  if isChatVisible() then showChat(false) end
+
+  dxDrawRectangle(0, 0, (sidebarWidth / zoom), screen.y, tocolor(255, 255, 255, 255 * gAlpha))
+
+  -- draw logo
+  dxDrawImage(35 / zoom + (offsetX / zoom), 50 / zoom, 296 / zoom, 72 / zoom, textures.logo, 0, 0, 0, tocolor(255, 255, 255, 255 * gAlpha))
+
+  -- draw interface ui
+  local currentUi = interfaces[activeInterface]
+  if not currentUi then return end
+
+  -- draw interface title
+  dxDrawText(currentUi.title, 50 / zoom + (offsetX / zoom), 150 / zoom, 50 / zoom + (offsetX / zoom), 0, tocolor(12, 12, 12, 255 * gAlpha * interfaceAlpha), 1.05 / zoom, fonts.semibold_big)
+
+  -- draw interface
+  currentUi.render(gAlpha * interfaceAlpha, offsetX)
 end
 
 function switchUi()
@@ -27,8 +113,8 @@ function switchUi()
   if not showing then
     bindEvent('onClientRender', root, renderUi)
 
-    if not animations.gAlpha then
-      animations.gAlpha = createAnimation(gAlpha, 1, 'InOutQuad', 550,
+    if not animations.gAlpha and not animations.sidebarWidth then
+      animations.gAlpha = createAnimation(gAlpha, 1, 'InOutQuad', 500,
         function(x)
           gAlpha = x
         end,
@@ -37,19 +123,42 @@ function switchUi()
           animations.gAlpha = false
         end
       )
+
+      animations.sidebarWidth = createAnimation(sidebarWidth, 450, 'InOutQuad', 1200,
+        function(w)
+          sidebarWidth = w
+        end,
+        function()
+          deleteAnimation(animations.sidebarWidth)
+          animations.sidebarWidth = false
+        end
+      )
     end
   else
-    if not animations.gAlpha then
-      animations.gAlpha = createAnimation(gAlpha, 0, 'InOutQuad', 550,
+    switchInterface('none')
+
+    if not animations.gAlpha and not animations.sidebarWidth then
+      animations.gAlpha = createAnimation(gAlpha, 0, 'InOutQuad', 500,
         function(x)
           gAlpha = x
         end,
         function()
           endCameraMovement()
+          destroyCurrentInterface()
           bindEvent('onClientRender', root, renderUi)
 
           deleteAnimation(animations.gAlpha)
           animations.gAlpha = false
+        end
+      )
+
+      animations.sidebarWidth = createAnimation(sidebarWidth, 0, 'InOutQuad', 1200,
+        function(w)
+          sidebarWidth = w
+        end,
+        function()
+          deleteAnimation(animations.sidebarWidth)
+          animations.sidebarWidth = false
         end
       )
     end
@@ -57,45 +166,22 @@ function switchUi()
 
   showing = not showing
 end
-
-function playLoginMusic()
-  if not sound and not isElement(sound) then
-    if fileExists('assets/sounds/isometric.mp3') then
-      sound = playSound('assets/sounds/isometric.mp3', true)
-    end
-  end
-end
-
-function stopLoginMusic()
-  if animations.sVolume then return end
-
-  if sound and isElement(sound) then
-    local currentVolume = getSoundVolume(sound)
-
-    animations.sVolume = createAnimation(currentVolume, 0, 'Linear', 2000,
-      function(volume)
-        setSoundVolume(sound, volume)
-      end,
-      function()
-        deleteAnimation(animations.sVolume)
-        animations.sVolume = false
-
-        stopSound(sound)
-        sound = false
-      end
-    )
-  end
-end
+addEventHandler('login:onClientSwitchInterface', resourceRoot, switchUi)
 
 local function stop()
   -- destroying textures
-  for textureName, texture in pairs(textures) do
-    if isElement(texture) then
-      destroyElement(texture)
+  for texture in ipairs(textures) do
+    local t = textures[texture]
+
+    if t and isElement(t) then
+      destroyElement(t)
     end
 
-    textures[textureName] = nil
+    textures[texture] = nil
   end
+
+  -- destroying current interface
+  destroyCurrentInterface()
 
   -- disabling music
   stopLoginMusic()
@@ -120,15 +206,29 @@ local function start()
     return
   end
 
+  -- initialize textures
+  textures.logo = dxCreateTexture('assets/images/logo.png')
+
+  -- initialize current ui
+  switchInterface('login')
+  loginUi.init()
+
+  interfaces.login = {}
+  interfaces.login.init = loginUi.init
+  interfaces.login.title = "Logowanie"
+  interfaces.login.render = loginUi.render
+  interfaces.login.destroy = loginUi.destroy
+
+  -- setup fonts
+  fonts.semibold_big = UI:getUIFont('semibold_big')
+
   -- switching ui
   switchUi()
+  showCursor(true)
 
   -- enabling camera
   fadeCamera(true)
   startCameraMovement()
-
-  -- textures
-  textures.logo = dxCreateTexture('assets/images/logo.png')
 
   -- handle disable event
   addEventHandler('onClientResourceStop', resourceRoot, stop)
