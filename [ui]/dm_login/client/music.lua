@@ -1,12 +1,13 @@
 local sound = false
+local filePath = 'assets/sounds/isometric.mp3'
 local animations = {}
 
 function playLoginMusic()
   if not sound and not isElement(sound) then
-    if fileExists('assets/sounds/isometric.mp3') then
-      sound = playSound('assets/sounds/isometric.mp3', true)
+    if fileExists(filePath) then
+      sound = playSound(filePath, true)
 
-      setSoundSpeed(sound, 0.95)
+      setSoundSpeed(sound, 0.90)
     end
   end
 end
