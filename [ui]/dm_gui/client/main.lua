@@ -3,6 +3,7 @@ addEventHandler('onClientResourceStart', resourceRoot, function()
   
   addEventHandler('onClientKey', root, changeEditbox)
   addEventHandler('onClientClick', root, onClientClickButton)
+  addEventHandler('onClientClick', root, onClientClickEditbox)
   addEventHandler('onClientCharacter', root, onEditboxType)
 
   print('ui lib initialized')
@@ -13,6 +14,7 @@ addEventHandler('onClientResourceStop', resourceRoot, function()
 
   removeEventHandler('onClientKey', root, changeEditbox)
   removeEventHandler('onClientClick', root, onClientClickButton)
+  removeEventHandler('onClientClick', root, onClientClickEditbox)
   removeEventHandler('onClientCharacter', root, onEditboxType)
 
   print('ui lib uninitialized')

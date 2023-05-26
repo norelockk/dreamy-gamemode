@@ -1,3 +1,6 @@
+local screen = Vector2(guiGetScreenSize())
+local zoom = 1920 / screen.x
+
 local BACKSPACE_DELAY = 70
 local ARROW_DELAY = 90
 
@@ -213,16 +216,16 @@ local function renderEditbox(editboxID)
     if isElement(editboxData.font) then
       local text = editboxData.text
       local x, y, w, h = editboxData.x, editboxData.y, editboxData.w, editboxData.h
-      if editboxData.textures then
-        if isEditboxActive(editboxID) then
-          dxDrawImage(x - 20 / zoom, y, w + 10 / zoom, h, editboxData.textures["active"])
-        else
-          dxDrawImage(x - 20 / zoom, y, w + 10 / zoom, h, editboxData.textures["default"])
-        end
+
+      if isEditboxActive(editboxID) then
+        dxDrawRectangle(x - 20 / zoom, y, w + 10 / zoom, h, tocolor(0, 0, 0, editboxData.alpha), true)
+      else
+        dxDrawRectangle(x - 20 / zoom, y, w + 10 / zoom, h, tocolor(0, 0, 0, editboxData.alpha * 0.65), true)
       end
+
       if editboxData.image then
         local height = dxGetFontHeight(editboxData.fontHeight, editboxData.font) * 1.1
-        dxDrawImage(math.floor(x - height / 3), math.floor(y + h / 2 - height / 2), math.floor(height), math.floor(height), editboxData.image, 0, 0, 0, tocolor(255, 255, 255, editboxData.alpha))
+        dxDrawImage(math.floor(x - height / 3), math.floor(y + h / 2 - height / 2), math.floor(height), math.floor(height), editboxData.image, 0, 0, 0, tocolor(255, 255, 255, editboxData.alpha), true)
         x = x + height
         w = w - height * 2
       end
@@ -278,16 +281,16 @@ local function renderEditbox(editboxID)
         -- kursor 
         local cursorW, cursorH = 1, h - math.floor(h * 0.2)
         local cursorX, cursorY = x + textWidth + 1, y + math.floor(h * 0.1)
-        dxDrawRectangle(cursorX, cursorY, cursorW, cursorH, tocolor(51, 102, 255, (editboxData.alpha * math.abs(getTickCount() % 1000 - 500) / 500)), true)
+        dxDrawRectangle(cursorX, cursorY, cursorW, cursorH, tocolor(255, 255, 255, (editboxData.alpha * math.abs(getTickCount() % 1000 - 500) / 500)), true)
       end
     end
   end
 end
 
 local function renderEditboxes()
-	for editbox in pairs(editboxes) do
-		renderEditbox(editbox)
-	end
+  for editbox in pairs(editboxes) do
+    renderEditbox(editbox)
+  end
 end
 addEventHandler('onClientRender', root, renderEditboxes)
 
@@ -355,4 +358,14 @@ function isCursorOnElement(x, y, w, h)
   else
     return false
   end
+end
+
+function isStringValid(string)
+  local length = string:len()
+  for i = 1, length do
+    if string:byte(i) > 126 or string:byte(i) < 33 then
+      return false
+    end
+  end
+  return true
 end

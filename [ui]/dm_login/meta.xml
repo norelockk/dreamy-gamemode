@@ -2,6 +2,9 @@
   <!-- assets -->
   <file src='assets/sounds/isometric.mp3' />
   <file src='assets/images/logo.png' />
+  <file src='assets/images/ui/icons/user.png' />
+  <file src='assets/images/ui/icons/email.png' />
+  <file src='assets/images/ui/icons/password.png' />
 
   <!-- client-side -->
   <script src='client/animations.lua' type='client' cache='false' />
