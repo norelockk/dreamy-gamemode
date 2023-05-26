@@ -13,6 +13,7 @@ addEvent('login:onClientSwitchInterface', true)
 local fonts = {}
 local gAlpha = 0
 local showing = false
+local changing = false
 local offsetX = -300
 local textures = {}
 local animations = {}
@@ -34,68 +35,54 @@ end
 local function animateInterface(mode, callback)
   if not mode or not type(mode) == 'string' then return end
 
-  switch(mode)
-  .case('in', function()
-      animations.interfaceOffsetX = createAnimation(offsetX, 0, 'InOutQuad', 600,
-        function(x)
-          offsetX = x
-        end,
-        function()
-          if callback and type(callback) == 'function' then
-            callback()
-          end
+  switch(mode).case('in', function()
+    animations.interfaceOffsetX = createAnimation(offsetX, 0, 'InOutQuad', 600, function(x)
+      offsetX = x
+    end, function()
+      if callback and type(callback) == 'function' then
+        callback()
+      end
 
-          deleteAnimation(animations.interfaceOffsetX)
-          animations.interfaceOffsetX = false
-        end
-      )
+      deleteAnimation(animations.interfaceOffsetX)
+      animations.interfaceOffsetX = false
+    end)
 
-      animations.interfaceAlpha = createAnimation(interfaceAlpha, 1, 'InOutQuad', 600,
-        function(x)
-          interfaceAlpha = x
-        end,
-        function()
-          deleteAnimation(animations.interfaceAlpha)
-          animations.interfaceAlpha = false
-        end
-      )
-          
-      playWooshSound()
-  end)
-  .case('out', function()
-      animations.interfaceOffsetX = createAnimation(offsetX, -300, 'InOutQuad', 600,
-        function(x)
-          offsetX = x
-        end,
-        function()
-          if callback and type(callback) == 'function' then
-            callback()
-          end
+    animations.interfaceAlpha = createAnimation(interfaceAlpha, 1, 'InOutQuad', 600, function(x)
+      interfaceAlpha = x
+    end, function()
+      deleteAnimation(animations.interfaceAlpha)
+      animations.interfaceAlpha = false
+    end)
 
-          deleteAnimation(animations.interfaceOffsetX)
-          animations.interfaceOffsetX = false
-        end
-      )
+    playWooshSound()
+  end).case('out', function()
+    animations.interfaceOffsetX = createAnimation(offsetX, -300, 'InOutQuad', 600, function(x)
+      offsetX = x
+    end, function()
+      if callback and type(callback) == 'function' then
+        callback()
+      end
 
-      animations.interfaceAlpha = createAnimation(interfaceAlpha, 0, 'InOutQuad', 600,
-        function(x)
-          interfaceAlpha = x
-        end,
-        function()
-          deleteAnimation(animations.interfaceAlpha)
-          animations.interfaceAlpha = false
-        end
-      )
-  end)
-  .default(function()
+      deleteAnimation(animations.interfaceOffsetX)
+      animations.interfaceOffsetX = false
+    end)
+
+    animations.interfaceAlpha = createAnimation(interfaceAlpha, 0, 'InOutQuad', 600, function(x)
+      interfaceAlpha = x
+    end, function()
+      deleteAnimation(animations.interfaceAlpha)
+      animations.interfaceAlpha = false
+    end)
+  end).default(function()
     print('unknown mode')
-  end)
-  .process()
+  end).process()
 end
 
 local function initializeCurrentInterface()
   local currentUi = interfaces[activeInterface]
-  if not currentUi then return end
+  if not currentUi then
+    return
+  end
 
   if currentUi.init then
     currentUi.init()
@@ -104,7 +91,9 @@ end
 
 local function destroyCurrentInterface()
   local currentUi = interfaces[activeInterface]
-  if not currentUi then return end
+  if not currentUi then
+    return
+  end
 
   if currentUi.destroy then
     currentUi.destroy()
@@ -113,7 +102,9 @@ end
 
 local function drawCurrentInterface()
   local currentUi = interfaces[activeInterface]
-  if not currentUi then return end
+  if not currentUi then
+    return
+  end
 
   if currentUi then
     dxDrawText(currentUi.title, 50 / zoom + (offsetX / zoom), 150 / zoom, 50 / zoom + (offsetX / zoom), 0, tocolor(12, 12, 12, 255 * gAlpha * interfaceAlpha), 1.05 / zoom, fonts.semibold_big)
@@ -126,19 +117,25 @@ end
 
 local function switchInterface(name)
   if activeInterface == name then return end
+  if changing then return end
+
+  changing = true
 
   if name == 'none' then
     animateInterface('out', function()
       destroyCurrentInterface()
       activeInterface = nil
+      changing = false
     end)
     return
   end
 
   if activeInterface == nil then
     activeInterface = name
-    animateInterface('in')
     initializeCurrentInterface()
+    animateInterface('in', function()
+      changing = false
+    end)
 
     return
   end
@@ -146,18 +143,23 @@ local function switchInterface(name)
   if activeInterface ~= name then
     animateInterface('out', function()
       destroyCurrentInterface()
-      
+
       activeInterface = name
       initializeCurrentInterface()
-      animateInterface('in')
+      animateInterface('in', function()
+        changing = false
+      end)
     end)
   end
 end
 addEventHandler('login:onClientSwitchInterface', resourceRoot, switchInterface)
 
 function renderUi()
-  if isChatVisible() then showChat(false) end
+  if isChatVisible() then
+    showChat(false)
+  end
 
+  -- draw 'sidebar'
   dxDrawRectangle(0, 0, (sidebarWidth / zoom), screen.y, tocolor(255, 255, 255, 255 * gAlpha))
 
   -- draw logo
@@ -168,7 +170,9 @@ function renderUi()
 end
 
 function switchUi()
-  if animations.gAlpha then return end
+  if animations.gAlpha then
+    return
+  end
 
   local bindEvent = showing and removeEventHandler or addEventHandler
 
@@ -176,54 +180,42 @@ function switchUi()
     bindEvent('onClientRender', root, renderUi)
 
     if not animations.gAlpha and not animations.sidebarWidth then
-      animations.gAlpha = createAnimation(gAlpha, 1, 'InOutQuad', 800,
-        function(x)
-          gAlpha = x
-        end,
-        function()
-          deleteAnimation(animations.gAlpha)
-          animations.gAlpha = false
-        end
-      )
+      animations.gAlpha = createAnimation(gAlpha, 1, 'InOutQuad', 800, function(x)
+        gAlpha = x
+      end, function()
+        deleteAnimation(animations.gAlpha)
+        animations.gAlpha = false
+      end)
 
-      animations.sidebarWidth = createAnimation(sidebarWidth, 450, 'InOutQuad', 900,
-        function(w)
-          sidebarWidth = w
-        end,
-        function()
-          switchInterface('login')
+      animations.sidebarWidth = createAnimation(sidebarWidth, 450, 'InOutQuad', 900, function(w)
+        sidebarWidth = w
+      end, function()
+        switchInterface('login')
 
-          deleteAnimation(animations.sidebarWidth)
-          animations.sidebarWidth = false
-        end
-      )
+        deleteAnimation(animations.sidebarWidth)
+        animations.sidebarWidth = false
+      end)
     end
   else
     switchInterface('none')
 
     if not animations.gAlpha and not animations.sidebarWidth then
-      animations.gAlpha = createAnimation(gAlpha, 0, 'InOutQuad', 800,
-        function(x)
-          gAlpha = x
-        end,
-        function()
-          endCameraMovement()
-          bindEvent('onClientRender', root, renderUi)
+      animations.gAlpha = createAnimation(gAlpha, 0, 'InOutQuad', 800, function(x)
+        gAlpha = x
+      end, function()
+        endCameraMovement()
+        bindEvent('onClientRender', root, renderUi)
 
-          deleteAnimation(animations.gAlpha)
-          animations.gAlpha = false
-        end
-      )
+        deleteAnimation(animations.gAlpha)
+        animations.gAlpha = false
+      end)
 
-      animations.sidebarWidth = createAnimation(sidebarWidth, 0, 'InOutQuad', 900,
-        function(w)
-          sidebarWidth = w
-        end,
-        function()
-          deleteAnimation(animations.sidebarWidth)
-          animations.sidebarWidth = false
-        end
-      )
+      animations.sidebarWidth = createAnimation(sidebarWidth, 0, 'InOutQuad', 900, function(w)
+        sidebarWidth = w
+      end, function()
+        deleteAnimation(animations.sidebarWidth)
+        animations.sidebarWidth = false
+      end)
     end
   end
 
