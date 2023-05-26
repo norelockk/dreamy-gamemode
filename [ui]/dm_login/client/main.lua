@@ -7,6 +7,7 @@ local UI = exports.dm_gui
 
 -- event listeners
 addEvent('login:onClientResponse', true)
+addEvent('login:onClientSwitchUi', true)
 addEvent('login:onClientSwitchInterface', true)
 
 -- vars
@@ -130,6 +131,8 @@ local function switchInterface(name)
     return
   end
 
+  if not interfaces[name] then return end
+
   if activeInterface == nil then
     activeInterface = name
     initializeCurrentInterface()
@@ -155,9 +158,7 @@ end
 addEventHandler('login:onClientSwitchInterface', resourceRoot, switchInterface)
 
 function renderUi()
-  if isChatVisible() then
-    showChat(false)
-  end
+  if isChatVisible() then showChat(false) end
 
   -- draw 'sidebar'
   dxDrawRectangle(0, 0, (sidebarWidth / zoom), screen.y, tocolor(255, 255, 255, 255 * gAlpha))
@@ -198,12 +199,13 @@ function switchUi()
     end
   else
     switchInterface('none')
+    endCameraMovement()
 
     if not animations.gAlpha and not animations.sidebarWidth then
       animations.gAlpha = createAnimation(gAlpha, 0, 'InOutQuad', 800, function(x)
         gAlpha = x
       end, function()
-        endCameraMovement()
+        stopLoginMusic()
         bindEvent('onClientRender', root, renderUi)
 
         deleteAnimation(animations.gAlpha)
@@ -221,6 +223,7 @@ function switchUi()
 
   showing = not showing
 end
+addEventHandler('login:onClientSwitchUi', resourceRoot, switchUi)
 
 local function stop()
   -- destroying textures
@@ -248,9 +251,6 @@ local function start()
   local logged = getElementData(localPlayer, 'player:logged')
   local spawned = getElementData(localPlayer, 'player:spawned')
 
-  -- music
-  -- playLoginMusic()
-
   -- check if player isn't already logged in or not spawned
   if logged then
     if not spawned then
@@ -260,17 +260,21 @@ local function start()
     return
   end
 
+  -- music
+  playLoginMusic()
+
   -- initialize textures
   textures.logo = dxCreateTexture('assets/images/logo.png')
 
   -- initialize uis
   interfaces.login = {}
+  interfaces.register = {}
+
   interfaces.login.init = loginUi.init
   interfaces.login.title = "Logowanie"
   interfaces.login.render = loginUi.render
   interfaces.login.destroy = loginUi.destroy
 
-  interfaces.register = {}
   interfaces.register.init = registerUi.init
   interfaces.register.title = "Rejestracja"
   interfaces.register.render = registerUi.render

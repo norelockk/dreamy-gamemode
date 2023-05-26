@@ -17,9 +17,14 @@
   <!-- music -->
   <script src='client/music.lua' type='client' cache='false' />
 
+  <!-- cache -->
+  <script src='client/cache.lua' type='client' cache='false' />
+
   <!-- interfaces -->
   <script src='client/ui/login.lua' type='client' cache='false' />
   <script src='client/ui/register.lua' type='client' cache='false' />
+
+  <!-- main stuff -->
   <script src='client/camera.lua' type='client' cache='false' />
   <script src='client/main.lua' type='client' cache='false' />
 
