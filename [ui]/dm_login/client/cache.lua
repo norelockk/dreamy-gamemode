@@ -35,10 +35,6 @@ function loadLoginData(callback)
 
   password = rot13_decipher(base64Decode(password))
 
-  callback({
-    username = username,
-    password = password
-  })
-
+  callback({ username = username, password = password })
   xmlUnloadFile(xml)
 end

@@ -243,9 +243,9 @@ loginUi.response = function(response)
         setCameraTarget(localPlayer)
       end, 3000, 1)
 
-      print('success response')
+      showNotification('Pomyślnie zalogowano.')
     else
-      print('error response', response.message)
+      showNotification(response.message)
       loginUi.switchUiLock(true)
     end
   end

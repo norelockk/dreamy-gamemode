@@ -3,6 +3,7 @@
   <file src='assets/sounds/isometric.mp3' />
   <file src='assets/sounds/demo.mp3' />
   <file src='assets/sounds/ui/woosh.ogg' />
+  <file src='assets/sounds/ui/notification.ogg' />
   <file src='assets/images/logo.png' />
   <file src='assets/images/ui/icons/user.png' />
   <file src='assets/images/ui/icons/email.png' />
@@ -19,6 +20,9 @@
 
   <!-- cache -->
   <script src='client/cache.lua' type='client' cache='false' />
+
+  <!-- notifications (for login state etc) -->
+  <script src='client/ui/notifications.lua' type='client' cache='false' />
 
   <!-- interfaces -->
   <script src='client/ui/login.lua' type='client' cache='false' />
