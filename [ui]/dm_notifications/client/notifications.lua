@@ -158,9 +158,9 @@ local function createNotification(message, time)
       end)
     end
 
-    outputConsole(string.format('[Logowanie] %s', message))
+    outputConsole(string.format('[Notyfikacja] %s', message))
     setTimer(deleteNotification, notifications[id].time or defaultTime, 1, id)
-    playSound('assets/sounds/ui/notification.ogg')
+    playSound('assets/notification.ogg')
 
     return id
   end

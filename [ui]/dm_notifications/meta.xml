@@ -1,0 +1,11 @@
+<meta>
+  <!-- assets -->
+  <file src='assets/notification.ogg' />
+
+  <!-- client -->
+  <script src='client/animations.lua' type='client' cache='false' />
+  <script src='client/notifications.lua' type='client' cache='false' />
+
+  <!-- exports -->
+  <export function='showNotification' type='client' />
+</meta>

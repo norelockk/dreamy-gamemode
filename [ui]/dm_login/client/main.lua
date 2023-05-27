@@ -261,7 +261,7 @@ local function start()
   end
 
   -- music
-  playLoginMusic()
+  -- playLoginMusic()
 
   -- initialize textures
   textures.logo = dxCreateTexture('assets/images/logo.png')

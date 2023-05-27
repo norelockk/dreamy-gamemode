@@ -4,6 +4,7 @@ local zoom = 1920 / screen.x
 
 -- ui
 local UI = exports.dm_gui
+local NOTIFICATIONS = exports.dm_notifications
 
 -- min/max requirements
 local DETAILS = {
@@ -243,9 +244,9 @@ loginUi.response = function(response)
         setCameraTarget(localPlayer)
       end, 3000, 1)
 
-      showNotification('Pomyślnie zalogowano.')
+      NOTIFICATIONS:showNotification('Pomyślnie zalogowano.')
     else
-      showNotification(response.message)
+      NOTIFICATIONS:showNotification(response.message)
       loginUi.switchUiLock(true)
     end
   end
