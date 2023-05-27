@@ -42,8 +42,8 @@ loginUi.init = function()
   -- adjust button sizes & positions
   loginUi.data.btnSize = Vector2(140 / zoom, 52 / zoom)
   loginUi.data.btnPos = {}
-  loginUi.data.btnPos.login = Vector2(50 / zoom, 460 / zoom)
-  loginUi.data.btnPos.register = Vector2(100 / zoom, 412 / zoom)
+  loginUi.data.btnPos.login = Vector2(50 / zoom, 480 / zoom)
+  loginUi.data.btnPos.register = Vector2(100 / zoom, 432 / zoom)
 
   -- register buttons
   loginUi.buttons.login = UI:createButton(-loginUi.data.btnPos.login.x, -loginUi.data.btnPos.login.y, loginUi.data.btnSize.x, loginUi.data.btnSize.y, 'Zaloguj', true)
@@ -52,7 +52,7 @@ loginUi.init = function()
   -- adjust checkboxes sizes & positions
   loginUi.data.checkSize = Vector2(32 / zoom, 32 / zoom)
   loginUi.data.checkPos = {}
-  loginUi.data.checkPos.remember = Vector2(50 / zoom, 340 / zoom)
+  loginUi.data.checkPos.remember = Vector2(50 / zoom, 350 / zoom)
 
   -- register checkboxes
   loginUi.checkboxes.remember = UI:createCheckbox(-loginUi.data.checkPos.remember.x, -loginUi.data.checkPos.remember.y, loginUi.data.checkSize.x, loginUi.data.checkSize.y, 'Zapamiętaj dane', false)
@@ -133,19 +133,20 @@ loginUi.sendLoginRequest = function()
   local password = UI:getEditboxText(loginUi.editboxes.password)
 
   if #username < DETAILS.USERNAME.MIN or #username >= DETAILS.USERNAME.MAX then
-    print(string.format('Login jest za %s', #username < DETAILS.USERNAME.MIN and 'krótki' or #username >= DETAILS.USERNAME.MAX and 'długi' or ''))
+    local howMuch = #username < DETAILS.USERNAME.MIN and 'krótka' or #username >= DETAILS.USERNAME.MAX and 'zbyt długa' or ''
+
+    NOTIFICATIONS:showNotification(string.format('Podana nazwa użytkownika jest %s', howMuch))
     return
   end
 
   if #password < DETAILS.PASSWORD.MIN or #password >= DETAILS.PASSWORD.MAX then
-    print(string.format('Hasło jest za %s', #password < DETAILS.PASSWORD.MIN and 'krótkie' or #password >= DETAILS.PASSWORD.MAX and 'długie' or ''))
+    local howMuch = #password < DETAILS.PASSWORD.MIN and 'za krótkie' or #password >= DETAILS.PASSWORD.MAX and 'za długie' or ''
+
+    NOTIFICATIONS:showNotification(string.format('Podane hasło jest %s', howMuch))
     return
   end
 
-  triggerServerEvent('login:sendRequest', resourceRoot, 'login', {
-    username = username,
-    password = password
-  })
+  triggerServerEvent('login:sendRequest', resourceRoot, 'login', { username = username, password = password })
   loginUi.switchUiLock(false)
 end
 
@@ -218,7 +219,7 @@ loginUi.render = function(alpha, offset)
 
   dxDrawText(
 [[Nie posiadasz konta?
-Kliknij              aby je założyć]], 50 / zoom + offX, 380 / zoom, 50 / zoom + offX, 0, tocolor(12, 12, 12, 255 * alpha), 0.85 / zoom, loginUi.fonts.light)
+Kliknij              aby je założyć]], 50 / zoom + offX, 400 / zoom, 50 / zoom + offX, 0, tocolor(12, 12, 12, 255 * alpha), 0.85 / zoom, loginUi.fonts.light)
 end
 
 loginUi.response = function(response)
@@ -235,14 +236,14 @@ loginUi.response = function(response)
         saveLoginData(username, password)
       end
 
-      showCursor(false)
-      fadeCamera(false)
-      triggerEvent('login:onClientSwitchUi', resourceRoot)
-      
-      setTimer(function()
-        fadeCamera(true, 2)
-        setCameraTarget(localPlayer)
-      end, 3000, 1)
+      -- showCursor(false)
+      -- fadeCamera(false)
+      -- setTimer(function()
+      --   fadeCamera(true, 2)
+      --   setCameraTarget(localPlayer)
+      -- end, 3000, 1)
+      -- triggerEvent('login:onClientSwitchUi', resourceRoot)
+      triggerEvent('login:onClientSwitchInterface', resourceRoot, 'welcome')
 
       NOTIFICATIONS:showNotification('Pomyślnie zalogowano.')
     else

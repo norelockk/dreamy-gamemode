@@ -1,7 +1,7 @@
 <meta>
   <!-- client-side scripts -->
-  <script src='client/money.lua' type='client' cache='false' />
-  <script src='client/playtime.lua' type='client' cache='false' />
+  <script src='client/money.lua' type='client' />
+  <script src='client/playtime.lua' type='client' />
 
   <!-- server-side scripts -->
   <script src='server/id.lua' type='server' />

@@ -9,24 +9,25 @@
   <file src='assets/images/ui/icons/password.png' />
 
   <!-- utils -->
-  <script src='utils.lua' type='shared' cache='false' />
+  <script src='utils.lua' type='shared' />
 
   <!-- client-side -->
-  <script src='client/animations.lua' type='client' cache='false' />
+  <script src='client/animations.lua' type='client' />
 
   <!-- music -->
-  <script src='client/music.lua' type='client' cache='false' />
+  <script src='client/music.lua' type='client' />
 
   <!-- cache -->
-  <script src='client/cache.lua' type='client' cache='false' />
+  <script src='client/cache.lua' type='client' />
 
   <!-- interfaces -->
-  <script src='client/ui/login.lua' type='client' cache='false' />
-  <script src='client/ui/register.lua' type='client' cache='false' />
+  <script src='client/ui/login.lua' type='client' />
+  <script src='client/ui/welcome.lua' type='client' />
+  <script src='client/ui/register.lua' type='client' />
 
   <!-- main stuff -->
-  <script src='client/camera.lua' type='client' cache='false' />
-  <script src='client/main.lua' type='client' cache='false' />
+  <script src='client/camera.lua' type='client' />
+  <script src='client/main.lua' type='client' />
 
   <!-- server -->
   <script src='server.lua' type='server' />

@@ -1,3 +1,8 @@
+-- check if player isn't already logged in or not spawned
+local logged = getElementData(localPlayer, 'player:logged')
+local spawned = getElementData(localPlayer, 'player:spawned')
+if logged and spawned then return end
+
 -- screen size n' zooming
 local screen = Vector2(guiGetScreenSize())
 local zoom = 1920 / screen.x
@@ -110,6 +115,10 @@ local function drawCurrentInterface()
   if currentUi then
     dxDrawText(currentUi.title, 50 / zoom + (offsetX / zoom), 150 / zoom, 50 / zoom + (offsetX / zoom), 0, tocolor(12, 12, 12, 255 * gAlpha * interfaceAlpha), 1.05 / zoom, fonts.semibold_big)
 
+    if currentUi.description then
+      dxDrawText(currentUi.description, 50 / zoom + (offsetX / zoom), 200 / zoom, 50 / zoom + (offsetX / zoom), 0, tocolor(12, 12, 12, 255 * gAlpha * interfaceAlpha), 0.85 / zoom, fonts.light)
+    end
+
     if currentUi.render then
       currentUi.render(gAlpha * interfaceAlpha, offsetX)
     end
@@ -171,10 +180,8 @@ function renderUi()
 end
 
 function switchUi()
-  if animations.gAlpha then
-    return
-  end
-
+  local logged = getElementData(localPlayer, 'player:logged')
+  local spawned = getElementData(localPlayer, 'player:spawned')
   local bindEvent = showing and removeEventHandler or addEventHandler
 
   if not showing then
@@ -191,7 +198,7 @@ function switchUi()
       animations.sidebarWidth = createAnimation(sidebarWidth, 450, 'InOutQuad', 900, function(w)
         sidebarWidth = w
       end, function()
-        switchInterface('login')
+        switchInterface(not logged and 'login' or not spawned and 'welcome' or '')
 
         deleteAnimation(animations.sidebarWidth)
         animations.sidebarWidth = false
@@ -248,32 +255,28 @@ local function stop()
 end
 
 local function start()
-  local logged = getElementData(localPlayer, 'player:logged')
-  local spawned = getElementData(localPlayer, 'player:spawned')
-
-  -- check if player isn't already logged in or not spawned
-  if logged then
-    if not spawned then
-      -- TODO: switch to start screen or spawn screen
-    end
-
-    return
-  end
+  -- initialize textures
+  textures.logo = dxCreateTexture('assets/images/logo.png')
 
   -- music
   -- playLoginMusic()
 
-  -- initialize textures
-  textures.logo = dxCreateTexture('assets/images/logo.png')
-
   -- initialize uis
   interfaces.login = {}
+  interfaces.welcome = {}
   interfaces.register = {}
 
   interfaces.login.init = loginUi.init
   interfaces.login.title = "Logowanie"
   interfaces.login.render = loginUi.render
   interfaces.login.destroy = loginUi.destroy
+
+  interfaces.welcome.init = welcomeUi.init
+  interfaces.welcome.title = string.format('Witaj, %s!', getPlayerName(localPlayer))
+  interfaces.welcome.description = [[Wybierz z poniższej listy lokalizację,
+w której byś chciał zostać zespawnowany]]
+  interfaces.welcome.render = welcomeUi.render
+  interfaces.welcome.destroy = welcomeUi.destroy
 
   interfaces.register.init = registerUi.init
   interfaces.register.title = "Rejestracja"
@@ -282,6 +285,7 @@ local function start()
 
   -- setup fonts
   fonts.semibold_big = UI:getUIFont('semibold_big')
+  fonts.light = UI:getUIFont('light')
 
   -- switching ui
   switchUi()

@@ -1,6 +1,6 @@
 <meta>
   <!-- shared -->
-  <script src='permissions.lua' type='shared' cache='false' />
+  <script src='permissions.lua' type='shared' />
 
   <!-- shared: exports -->
   <export function='hasRolePermission' type='shared' />

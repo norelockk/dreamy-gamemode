@@ -11,12 +11,12 @@
   <file src='assets/sounds/hover.ogg' />
 
   <!-- scripts -->
-  <script src='client/libs/animations.lua' type='client' cache='false' />
-  <script src='client/fonts.lua' type='client' cache='false' />
-  <script src='client/buttons.lua' type='client' cache='false' />
-  <script src='client/checkbox.lua' type='client' cache='false' />
-  <script src='client/edit.lua' type='client' cache='false' />
-  <script src='client/main.lua' type='client' cache='false' />
+  <script src='client/libs/animations.lua' type='client' />
+  <script src='client/fonts.lua' type='client' />
+  <script src='client/buttons.lua' type='client' />
+  <script src='client/checkbox.lua' type='client' />
+  <script src='client/edit.lua' type='client' />
+  <script src='client/main.lua' type='client' />
 
   <!-- exports -->
   <export function='getUIFont' type='client' />
