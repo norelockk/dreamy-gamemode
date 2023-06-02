@@ -73,7 +73,7 @@ local function checkIsSomeoneLogged(account)
   if not account then return false end
 
   for _, player in ipairs(getElementsByType('player')) do
-    local accId = getElementData(player, 'player:account_id')
+    local accId = getElementData(player, 'player:aid')
 
     if account.id == accId then
       return true
@@ -88,7 +88,7 @@ function loginGameAccount(client, data)
   if not client or not getElementType(client) == 'player' then return 'GAME_CLIENT_UNIDENTIFIED' end
 
   -- gathering current player data
-  local accountId = getElementData(client, 'player:account_id')
+  local accountId = getElementData(client, 'player:aid')
   local logged = getElementData(client, 'player:logged')
   local serial = getPlayerSerial(client)
   local name = getPlayerName(client)
@@ -114,28 +114,18 @@ function loginGameAccount(client, data)
 
     -- elements data to set
     local _data = {
-      ['player:bw'] = account.bw,
+      ['player:aj'] = account.ajail,
+      ['player:aid'] = account.id,
       ['player:role'] = account.role,
-      ['player:jail'] = account.jail,
-      ['player:wanted'] = account.wanted ~= 0,
       ['player:logged'] = true,
-      ['player:spawned'] = false,
-      ['player:warnings'] = account.warnings,
       ['player:playtime'] = account.playtime,
       ['player:reputation'] = account.reputation,
-      ['player:account_id'] = account.id
+      ['character:spawned'] = false,
     }
 
     local passwordHashVaild = passwordVerify(data.password, account.password)
 
     if passwordHashVaild then
-      if account.bw ~= 0 then
-        
-      end
-
-      if account.wanted ~= 0 then setPlayerWantedLevel(client, account.wanted) end
-      if name ~= account.username then setPlayerName(client, account.username) end
-      
       for key, value in pairs(_data) do
         setElementData(client, key, value)
       end
@@ -154,7 +144,7 @@ function findPlayerByAccountId(accountId)
   if not accountId or not type(accountId) == 'number' then return end
 
   for k, player in ipairs(getElementsByType('player')) do
-    local accId = getElementData(player, 'player:account_id')
+    local accId = getElementData(player, 'player:aid')
 
     if accountId == accId then
       return player
@@ -171,7 +161,7 @@ function setPlayerAccountOnline(player, state)
   local logged = getElementData(player, 'player:logged')
   if not logged then return end
 
-  local accountId = getElementData(player, 'player:account_id')
+  local accountId = getElementData(player, 'player:aid')
   if not accountId or not type(accountId) == 'number' then return end
 
   local updated = MYSQL:queryFree(state and 'UPDATE `account` SET `online` = 1 WHERE `id` = ?' or 'UPDATE `account` SET `online` = 0, `lastOnline` = CURRENT_TIME() WHERE `id` = ?', accountId)
@@ -204,28 +194,21 @@ function savePlayerAccount(player)
   local logged = getElementData(player, 'player:logged')
   if not logged then return false end
 
-  local accountId = getElementData(player, 'player:account_id')
+  local accountId = getElementData(player, 'player:aid')
   if not accountId or not type(accountId) == 'number' then return false end
 
   -- data
-  local bw = getElementData(player, 'player:bw')
-  local jail = getElementData(player, 'player:jail')
-  local money = CORE:getGamePlayerMoney(player)
-  local health = getElementHealth(player)
-  local wanted = getPlayerWantedLevel(player)
+  local ajail = getElementData(player, 'player:aj')
   local warnings = getElementData(player, 'player:warnings')
   local playtime = getElementData(player, 'player:playtime')
-  local reputation = getElementData(player, 'player:reputation')
 
   local updated = MYSQL:queryFree(
-    'UPDATE `account` SET `bw` = ?, `jail` = ?, `money` = ?, `warnings` = ?, `playtime` = ?, `health` = ?, `wanted` = ?, `reputation` = ?, `updatedAt` = CURRENT_TIME() WHERE `id` = ?',
-    bw, jail, money, warnings, playtime, health, wanted, reputation,
+    'UPDATE `account` SET `ajail` = ?, `warnings` = ?, `playtime` = ?, `updatedAt` = CURRENT_TIME() WHERE `id` = ?',
+    ajail, warnings, playtime,
     accountId
   )
 
   if updated then
-    print('account updated', accountId)
-
     return true
   end
 

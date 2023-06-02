@@ -1,6 +1,6 @@
 -- check if player isn't already logged in or not spawned
 local logged = getElementData(localPlayer, 'player:logged')
-local spawned = getElementData(localPlayer, 'player:spawned')
+local spawned = getElementData(localPlayer, 'character:spawned')
 if logged and spawned then return end
 
 -- screen size n' zooming
@@ -236,7 +236,7 @@ end
 
 local function switchUi()
   local logged = getElementData(localPlayer, 'player:logged')
-  local spawned = getElementData(localPlayer, 'player:spawned')
+  local spawned = getElementData(localPlayer, 'character:spawned')
   local bindEvent = showing and removeEventHandler or addEventHandler
   local ui_SwitchLogic = not logged and 'login' or not spawned and 'welcome' or ''
 

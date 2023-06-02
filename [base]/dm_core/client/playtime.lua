@@ -22,7 +22,7 @@ local session = 0
 local playtime = -1
 
 local function calculate()
-  -- if not getElementData(localPlayer, 'player:spawned') then return end
+  -- if not getElementData(localPlayer, 'character:spawned') then return end
   if getElementData(localPlayer, 'player:away') then
     return
   end
@@ -54,7 +54,7 @@ end
 setTimer(calculate, 1000, 0)
 
 local function update()
-  -- if not getElementData(localPlayer, 'player:spawned') then return end
+  -- if not getElementData(localPlayer, 'character:spawned') then return end
   if getElementData(localPlayer, 'player:away') then
     return
   end
