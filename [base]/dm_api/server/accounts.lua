@@ -91,7 +91,6 @@ function loginGameAccount(client, data)
   local accountId = getElementData(client, 'player:aid')
   local logged = getElementData(client, 'player:logged')
   local serial = getPlayerSerial(client)
-  local name = getPlayerName(client)
 
   -- check if player is already 'for sure' logged
   if logged and accountId then return 'CLIENT_ALREADY_LOGGED' end
