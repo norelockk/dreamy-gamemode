@@ -17,6 +17,7 @@ addEvent('login:onClientSwitchInterface', true)
 
 -- vars
 local fonts = {}
+local sound = false
 local gAlpha = 0
 local showing = false
 local changing = false
@@ -166,7 +167,60 @@ local function switchInterface(name)
 end
 addEventHandler('login:onClientSwitchInterface', resourceRoot, switchInterface)
 
-function renderUi()
+-- kick drum detection
+local kickThreshold = 0.152
+local kickDetected = false
+local kickCooldown = 400
+local lastKickTime = 0
+local lightAlpha = 0
+
+local function renderLightData()
+  -- debug
+  -- local offsetX = 30
+  -- dxDrawRectangle(350 + (id * offsetX), 50, 10, -fftData[id] * 40, tocolor(255, 255, 255, 255))
+  -- dxDrawText(tostring(id), 350 + (id * offsetX), 50)
+  -- dxDrawText(string.format('%.1f', fftData[id], 5), 360 + (id * offsetX), 30)
+
+  if isElement(sound) and sound then
+    local fftData = getSoundFFTData(sound, 4096, 32)
+
+    local amplitudeSum = 0
+    for id = 1, #fftData do
+      amplitudeSum = amplitudeSum + fftData[id]
+    end
+
+    local averageAm = amplitudeSum / #fftData
+    local averageAmplitude = fftData[4]
+
+    if averageAmplitude > kickThreshold then
+      local currentTime = getTickCount()
+
+      if currentTime - lastKickTime >= kickCooldown then
+        kickDetected = true
+        lastKickTime = currentTime
+      end
+    else
+      kickDetected = false
+    end
+  end
+
+  if kickDetected then
+    animations.kickAlpha = createAnimation(1, 0, 'Linear', 1500, function(a)
+      lightAlpha = a
+    end, function()
+      deleteAnimation(animations.kickAlpha)
+      animations.kickAlpha = nil
+    end)
+  end
+end
+
+local function drawMusicLight()
+  renderLightData()
+
+  dxDrawImage(0, 0, screen.x, screen.y, textures.light, 0, 0, 0, tocolor(255, 255, 255, 255 * lightAlpha))
+end
+
+local function renderUi()
   if isChatVisible() then showChat(false) end
 
   -- draw 'sidebar'
@@ -176,13 +230,15 @@ function renderUi()
   dxDrawImage(35 / zoom + ((sidebarWidth - 450) / zoom), 50 / zoom, 296 / zoom, 72 / zoom, textures.logo, 0, 0, 0, tocolor(255, 255, 255, 255 * gAlpha))
 
   -- draw interface
+  drawMusicLight()
   drawCurrentInterface()
 end
 
-function switchUi()
+local function switchUi()
   local logged = getElementData(localPlayer, 'player:logged')
   local spawned = getElementData(localPlayer, 'player:spawned')
   local bindEvent = showing and removeEventHandler or addEventHandler
+  local ui_SwitchLogic = not logged and 'login' or not spawned and 'welcome' or ''
 
   if not showing then
     bindEvent('onClientRender', root, renderUi)
@@ -198,7 +254,7 @@ function switchUi()
       animations.sidebarWidth = createAnimation(sidebarWidth, 450, 'InOutQuad', 900, function(w)
         sidebarWidth = w
       end, function()
-        switchInterface(not logged and 'login' or not spawned and 'welcome' or '')
+        switchInterface(ui_SwitchLogic)
 
         deleteAnimation(animations.sidebarWidth)
         animations.sidebarWidth = false
@@ -257,9 +313,11 @@ end
 local function start()
   -- initialize textures
   textures.logo = dxCreateTexture('assets/images/logo.png')
+  textures.light = dxCreateTexture('assets/images/light.png')
 
   -- music
-  -- playLoginMusic()
+  playLoginMusic()
+  sound = getLoginMusicElement()
 
   -- initialize uis
   interfaces.login = {}
@@ -292,7 +350,7 @@ w której byś chciał zostać zespawnowany]]
   showCursor(true)
 
   -- enabling camera
-  fadeCamera(true)
+  fadeCamera(false)
   startCameraMovement()
 
   -- handle disable event

@@ -95,15 +95,28 @@ loginUi.init = function()
   loadLoginData(function(cache)
     if not cache then return end
 
-    UI:setCheckboxChecked(loginUi.checkboxes.remember, true)
-    UI:setEditboxText(loginUi.editboxes.username, cache.username)
-    UI:setEditboxText(loginUi.editboxes.password, cache.password)
+    UI:setCheckboxChecked(loginUi.checkboxes.remember, cache.remember)
+
+    if cache.remember then
+      UI:setEditboxText(loginUi.editboxes.username, cache.username)
+      UI:setEditboxText(loginUi.editboxes.password, cache.password)
+    end
   end)
 
   -- setup event handlers
+  addEventHandler('onClientKey', root, loginUi.onClickKey)
   addEventHandler('login:onClientResponse', resourceRoot, loginUi.response)
   addEventHandler('gui:onClientClickButton', loginUi.buttons.login, loginUi.sendLoginRequest)
   addEventHandler('gui:onClientClickButton', loginUi.buttons.register, loginUi.switchToRegister)
+end
+
+loginUi.onClickKey = function(key, state)
+  local logged = getElementData(localPlayer, 'player:logged')
+  if logged then return end
+
+  if key == 'enter' and state then
+    loginUi.sendLoginRequest()
+  end
 end
 
 loginUi.switchToRegister = function()
@@ -151,6 +164,7 @@ loginUi.sendLoginRequest = function()
 end
 
 loginUi.destroy = function()
+  removeEventHandler('onClientKey', root, loginUi.onClickKey)
   removeEventHandler('login:onClientResponse', resourceRoot, loginUi.response)
   removeEventHandler('gui:onClientClickButton', loginUi.buttons.login, loginUi.sendLoginRequest)
   removeEventHandler('gui:onClientClickButton', loginUi.buttons.register, loginUi.switchToRegister)
@@ -244,6 +258,7 @@ loginUi.response = function(response)
       -- end, 3000, 1)
       -- triggerEvent('login:onClientSwitchUi', resourceRoot)
       triggerEvent('login:onClientSwitchInterface', resourceRoot, 'welcome')
+      removeEventHandler('onClientKey', root, loginUi.onClickKey)
 
       NOTIFICATIONS:showNotification('Pomyślnie zalogowano.')
     else
