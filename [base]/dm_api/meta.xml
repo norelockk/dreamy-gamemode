@@ -1,5 +1,5 @@
 <meta>
-  <!-- utils -->
+  <!-- utils n' shared -->
   <script src='utils.lua' type='shared' />
 
   <!-- accounts -->

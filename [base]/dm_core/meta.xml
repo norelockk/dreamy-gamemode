@@ -1,7 +1,11 @@
 <meta>
+  <!-- shared -->
+  <script src='shared.lua' type='shared' />
+
   <!-- client-side scripts -->
   <script src='client/money.lua' type='client' />
   <script src='client/playtime.lua' type='client' />
+  <script src='client/watermark.lua' type='client' />
 
   <!-- server-side scripts -->
   <script src='server/id.lua' type='server' />
@@ -12,4 +16,5 @@
   <export function='getGamePlayerMoney' type='shared' />
   <export function='giveGamePlayerMoney' type='shared' />
   <export function='takeGamePlayerMoney' type='shared' />
+  <export function='getGamemodeInfo' type='shared' />
 </meta>

@@ -15,15 +15,22 @@ enum AccountRolesEnum {
   OWNER
 }
 
+enum CharacterClassEnum {
+  ENGINEER
+  GANGSTER
+  LAW_OFFICER
+  ENTREPRENEUR
+}
+
 model Account {
   id Int @id @default(autoincrement())
 
-  role       AccountRolesEnum @default(value: USER)
-  ajail       BigInt           @default(0)
-  banned     Boolean          @default(false)
-  online     Boolean          @default(false)
-  warnings   Int              @default(0)
-  playtime   BigInt           @default(0)
+  role     AccountRolesEnum @default(value: USER)
+  ajail    BigInt           @default(0)
+  banned   Boolean          @default(false)
+  online   Boolean          @default(false)
+  warnings Int              @default(0)
+  playtime BigInt           @default(0)
 
   email    String @unique
   serial   String
@@ -33,4 +40,27 @@ model Account {
   updatedAt  DateTime @updatedAt
   createdAt  DateTime @default(now())
   lastOnline DateTime @default(now())
+
+  characters Character[]
+}
+
+model Character {
+  id Int @id @default(autoincrement())
+
+  owner Account @relation(fields: [ownerId], references: [id])
+
+  // identification
+  firstName String
+  lastName  String
+  class     CharacterClassEnum @default(value: GANGSTER)
+  dead      Boolean            @default(value: false)
+  age       Int                @default(value: 21)
+
+  // stats
+  bw     BigInt @default(value: 0)
+  jail   BigInt @default(value: 0)
+  skin   BigInt @default(value: 0)
+  health Float  @default(100.0)
+
+  ownerId Int
 }
