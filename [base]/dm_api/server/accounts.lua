@@ -117,6 +117,7 @@ function loginGameAccount(client, data)
       ['player:aid'] = account.id,
       ['player:role'] = account.role,
       ['player:logged'] = true,
+      ['player:username'] = account.username,
       ['player:playtime'] = account.playtime,
       ['player:reputation'] = account.reputation,
       ['character:spawned'] = false,

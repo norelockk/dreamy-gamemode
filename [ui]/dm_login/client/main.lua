@@ -331,8 +331,11 @@ local function start()
 
   interfaces.welcome.init = welcomeUi.init
   interfaces.welcome.title = string.format('Witaj, %s!', getPlayerName(localPlayer))
-  interfaces.welcome.description = [[Wybierz z poniższej listy lokalizację,
-w której byś chciał zostać zespawnowany]]
+  interfaces.welcome.description = [[Wybierz z poniższej listy swoją postać którą
+będziesz odgrywał swoją rolę!
+
+Nie posiadasz postaci? Kliknij w slot z ikonką
+plusika aby założyć postać!]]
   interfaces.welcome.render = welcomeUi.render
   interfaces.welcome.destroy = welcomeUi.destroy
 
