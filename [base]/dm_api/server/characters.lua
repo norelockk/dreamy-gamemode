@@ -9,6 +9,27 @@ local MYSQL = exports.mysql
 addEvent('api:onPlayerCharacterCreated', true)
 addEvent('api:onPlayerCharacterSelected', true)
 
+-- gathering all characters
+function getAllGameCharacters(client)
+  if not client or not getElementType(client) == 'player' then return 'GAME_CLIENT_UNIDENTIFIED' end
+  
+  -- check if player is logged
+  local logged = getElementData(client, 'player:logged')
+  if not logged then
+    return 'CLIENT_NOT_LOGGED'
+  end
+
+  -- gathering current player data
+  local owner = getElementData(client, 'player:aid')
+
+  local characters = MYSQL:query(string.format('SELECT * FROM `character` WHERE `ownerId` = ? LIMIT %d', MAX_CHARACTERS_PER_ACCOUNT), owner)
+  if #characters > 0 then
+    return characters
+  end
+
+  return 'CLIENT_PLAYER_NO_CHARACTERS'
+end
+
 -- creating character
 function createGameCharacter(client, data)
   if not client or not getElementType(client) == 'player' then return 'GAME_CLIENT_UNIDENTIFIED' end

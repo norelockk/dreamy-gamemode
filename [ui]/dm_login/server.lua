@@ -20,13 +20,13 @@ local API = exports.dm_api
 addEvent('login:sendRequest', true)
 
 -- functions
-local function request(type, data)
+local function request(_type, data)
   if not client or not isElement(client) then return end
   if not getElementType(client) == 'player' then return end
 
   local response
 
-  switch(type)
+  switch(_type)
   .case('login', function()
     local ip = getPlayerIP(client)
 
@@ -93,10 +93,7 @@ local function request(type, data)
     end)
     -- success
     .case('CLIENT_LOGIN_SUCCESS', function()
-      triggerClientEvent(client, 'login:onClientResponse', resourceRoot, {
-        type = 'login',
-        success = true
-      })
+      triggerClientEvent(client, 'login:onClientResponse', resourceRoot, { type = 'login', success = true })
     end)
     -- unknown response
     .default(function()
@@ -109,6 +106,21 @@ local function request(type, data)
       })
     end)
     .process()
+  end)
+  .case('getPlayerCharacters', function()
+    response = API:getAllGameCharacters(client)
+
+    if type(response) == 'string' then
+      switch(response)
+      .case('CLIENT_PLAYER_NO_CHARACTERS', function()
+        triggerClientEvent(client, 'login:onClientResponse', resourceRoot, { type = 'welcome', success = true, characters = {} })
+      end)
+      .default(function()
+        iprint('unknown response', response)
+      end).process()
+    else
+      iprint(response)
+    end
   end)
   .default(function()
     print('nieznany typ akcji')

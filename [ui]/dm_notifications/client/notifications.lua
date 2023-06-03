@@ -45,12 +45,12 @@ local function renderNotifications()
       local messageTextWidth = dxGetTextWidth(notification.message, font.scale or 1, font.family or 'default-bold')
       local w = messageTextWidth + 20
 
-      dxDrawRoundedRectangle((notificationsPosition.x - w) / 2, notificationsPosition.y - offsetY, w, notificationsOffset.y, 0, tocolor(0, 0, 0, 220 * notification.alphaProgress))
-      dxDrawRoundedRectangle((notificationsPosition.x - w) / 2, notificationsPosition.y - offsetY + notificationsOffset.y - 1.2, notification.barProgress * w, 1.2, 0, tocolor(255, 255, 255, 255 * notification.alphaProgress))
+      dxDrawRoundedRectangle((notificationsPosition.x - w) / 2, notificationsPosition.y - offsetY, w, notificationsOffset.y, 0, tocolor(0, 0, 0, 220 * notification.alphaProgress), true)
+      dxDrawRoundedRectangle((notificationsPosition.x - w) / 2, notificationsPosition.y - offsetY + notificationsOffset.y - 1.2, notification.barProgress * w, 1.2, 0, tocolor(255, 255, 255, 255 * notification.alphaProgress), true)
 
       local x, y = (notificationsPosition.x - w) / 2, notificationsPosition.y - offsetY
 
-      dxDrawText(notification.message, x, y, w + x, notificationsOffset.y + y, tocolor(255, 255, 255, 240 * notification.alphaProgress), font.scale or 1, font.family, 'center', 'center')
+      dxDrawText(notification.message, x, y, w + x, notificationsOffset.y + y, tocolor(255, 255, 255, 240 * notification.alphaProgress), font.scale or 1, font.family, 'center', 'center', false, false, true)
     end
   end
 

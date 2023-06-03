@@ -2,13 +2,15 @@
   <!-- utils n' shared -->
   <script src='utils.lua' type='shared' />
 
-  <!-- accounts -->
+  <!-- accounts & characters -->
   <script src='server/accounts.lua' type='server' />
+  <script src='server/characters.lua' type='server' />
 
-  <!-- exports: accounts -->
+  <!-- exports: accounts & characters -->
   <export function='loginGameAccount' type='server' />
   <export function='createGameAccount' type='server' />
   <export function='findPlayerByAccountId' type='server' />
+  <export function='getAllGameCharacters' type='server' />
 
   <!-- server api -->
   <script src='server/main.lua' type='server' />

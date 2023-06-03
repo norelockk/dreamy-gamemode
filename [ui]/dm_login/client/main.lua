@@ -1,7 +1,9 @@
 -- check if player isn't already logged in or not spawned
 local logged = getElementData(localPlayer, 'player:logged')
 local spawned = getElementData(localPlayer, 'character:spawned')
-if logged and spawned then return end
+if logged and spawned then
+  return
+end
 
 -- screen size n' zooming
 local screen = Vector2(guiGetScreenSize())
@@ -14,6 +16,7 @@ local UI = exports.dm_gui
 addEvent('login:onClientResponse', true)
 addEvent('login:onClientSwitchUi', true)
 addEvent('login:onClientSwitchInterface', true)
+addEvent('login:onClientChangeDescription', true)
 
 -- vars
 local fonts = {}
@@ -40,7 +43,9 @@ local function playWooshSound()
 end
 
 local function animateInterface(mode, callback)
-  if not mode or not type(mode) == 'string' then return end
+  if not mode or not type(mode) == 'string' then
+    return
+  end
 
   switch(mode).case('in', function()
     animations.interfaceOffsetX = createAnimation(offsetX, 0, 'InOutQuad', 600, function(x)
@@ -116,7 +121,7 @@ local function drawCurrentInterface()
   if currentUi then
     dxDrawText(currentUi.title, 50 / zoom + (offsetX / zoom), 150 / zoom, 50 / zoom + (offsetX / zoom), 0, tocolor(12, 12, 12, 255 * gAlpha * interfaceAlpha), 1.05 / zoom, fonts.semibold_big)
 
-    if currentUi.description then
+    if currentUi.description and type(currentUi.description) == 'string' then
       dxDrawText(currentUi.description, 50 / zoom + (offsetX / zoom), 200 / zoom, 50 / zoom + (offsetX / zoom), 0, tocolor(12, 12, 12, 255 * gAlpha * interfaceAlpha), 0.85 / zoom, fonts.light)
     end
 
@@ -126,9 +131,23 @@ local function drawCurrentInterface()
   end
 end
 
+local function changeInterfaceDescription(description)
+  local currentUi = interfaces[activeInterface]
+  if not currentUi then
+    return
+  end
+
+  currentUi.description = description
+end
+addEventHandler('login:onClientChangeDescription', resourceRoot, changeInterfaceDescription)
+
 local function switchInterface(name)
-  if activeInterface == name then return end
-  if changing then return end
+  if activeInterface == name then
+    return
+  end
+  if changing then
+    return
+  end
 
   changing = true
 
@@ -141,7 +160,9 @@ local function switchInterface(name)
     return
   end
 
-  if not interfaces[name] then return end
+  if not interfaces[name] then
+    return
+  end
 
   if activeInterface == nil then
     activeInterface = name
@@ -167,32 +188,32 @@ local function switchInterface(name)
 end
 addEventHandler('login:onClientSwitchInterface', resourceRoot, switchInterface)
 
--- kick drum detection
-local kickThreshold = 0.152
+-- kick & snare drum detection
+local kickThreshold = 0.145
 local kickDetected = false
-local kickCooldown = 400
+local kickCooldown = 350
 local lastKickTime = 0
 local lightAlpha = 0
 
 local function renderLightData()
-  -- debug
-  -- local offsetX = 30
-  -- dxDrawRectangle(350 + (id * offsetX), 50, 10, -fftData[id] * 40, tocolor(255, 255, 255, 255))
-  -- dxDrawText(tostring(id), 350 + (id * offsetX), 50)
-  -- dxDrawText(string.format('%.1f', fftData[id], 5), 360 + (id * offsetX), 30)
-
   if isElement(sound) and sound then
     local fftData = getSoundFFTData(sound, 4096, 32)
 
     local amplitudeSum = 0
     for id = 1, #fftData do
       amplitudeSum = amplitudeSum + fftData[id]
+
+      -- debug
+      -- local offsetX = 30
+      -- dxDrawRectangle(350 + (id * offsetX), 30, 10, -fftData[id] * 40, tocolor(255, 255, 255, 255))
+      -- dxDrawText(tostring(id), 350 + (id * offsetX), 50)
+      -- dxDrawText(string.format('%.1f', fftData[id], 5), 360 + (id * offsetX), 30)
     end
 
     local averageAm = amplitudeSum / #fftData
-    local averageAmplitude = fftData[4]
+    local averageKick = fftData[7]
 
-    if averageAmplitude > kickThreshold then
+    if averageKick > kickThreshold then
       local currentTime = getTickCount()
 
       if currentTime - lastKickTime >= kickCooldown then
@@ -205,11 +226,20 @@ local function renderLightData()
   end
 
   if kickDetected then
+    local currentFogSpeed = exports['shader_fog']:currentSpeed()
+
     animations.kickAlpha = createAnimation(1, 0, 'Linear', 1500, function(a)
       lightAlpha = a
     end, function()
       deleteAnimation(animations.kickAlpha)
       animations.kickAlpha = nil
+    end)
+
+    animations.fogSpeed = createAnimation(0.15, 0, 'OutInQuad', 1000, function(s)
+      exports['shader_fog']:speed(currentFogSpeed + s + 0.0125)
+    end, function()
+      deleteAnimation(animations.fogSpeed)
+      animations.fogSpeed = nil
     end)
   end
 end
@@ -217,11 +247,20 @@ end
 local function drawMusicLight()
   renderLightData()
 
-  dxDrawImage(0, 0, screen.x, screen.y, textures.light, 0, 0, 0, tocolor(255, 255, 255, 255 * lightAlpha))
+  dxDrawImage(0, 0, screen.x, screen.y, textures.light, 0, 0, 0, tocolor(255, 255, 255, 255 * lightAlpha * gAlpha))
 end
 
 local function renderUi()
-  if isChatVisible() then showChat(false) end
+  if isChatVisible() then
+    showChat(false)
+  end
+
+  -- draw background
+  dxDrawImage(0, 0, screen.x, screen.y, textures.background, 0, 0, 0, tocolor(255, 255, 255, 255 * gAlpha))
+
+  -- draw fog
+  exports['shader_fog']:color(110, 110, 110, 25 * gAlpha)
+  exports['shader_fog']:render()
 
   -- draw 'sidebar'
   dxDrawRectangle(0, 0, (sidebarWidth / zoom), screen.y, tocolor(255, 255, 255, 255 * gAlpha))
@@ -305,15 +344,13 @@ local function stop()
 
   -- disabling music
   stopLoginMusic()
-
-  -- disabling camera
-  endCameraMovement()
 end
 
 local function start()
   -- initialize textures
   textures.logo = dxCreateTexture('assets/images/logo.png')
   textures.light = dxCreateTexture('assets/images/light.png')
+  textures.background = dxCreateTexture('assets/images/background.png')
 
   -- music
   playLoginMusic()
@@ -332,10 +369,7 @@ local function start()
   interfaces.welcome.init = welcomeUi.init
   interfaces.welcome.title = string.format('Witaj, %s!', getPlayerName(localPlayer))
   interfaces.welcome.description = [[Wybierz z poniższej listy swoją postać którą
-będziesz odgrywał swoją rolę!
-
-Nie posiadasz postaci? Kliknij w slot z ikonką
-plusika aby założyć postać!]]
+będziesz odgrywał swoją rolę!]]
   interfaces.welcome.render = welcomeUi.render
   interfaces.welcome.destroy = welcomeUi.destroy
 
@@ -352,9 +386,11 @@ plusika aby założyć postać!]]
   switchUi()
   showCursor(true)
 
-  -- enabling camera
+  -- setting fog color and changing the behavior
+  exports['shader_fog']:reload()
+  exports['shader_fog']:color(110, 110, 110, 0)
+
   fadeCamera(false)
-  startCameraMovement()
 
   -- handle disable event
   addEventHandler('onClientResourceStop', resourceRoot, stop)

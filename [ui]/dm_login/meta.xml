@@ -1,11 +1,12 @@
 <meta>
   <!-- assets -->
-  <file src='assets/sounds/isometric.mp3' />
-  <file src='assets/sounds/blacknite.mp3' />
-  <file src='assets/sounds/demo.mp3' />
+  <file src='assets/sounds/spiral.mp3' />
   <file src='assets/sounds/ui/woosh.ogg' />
   <file src='assets/images/logo.png' />
   <file src='assets/images/light.png' />
+  <file src='assets/images/background.png' />
+  <file src='assets/images/ui/loading.png' />
+  <file src='assets/images/ui/sadface.png' />
   <file src='assets/images/ui/icons/user.png' />
   <file src='assets/images/ui/icons/email.png' />
   <file src='assets/images/ui/icons/password.png' />

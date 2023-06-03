@@ -3,7 +3,7 @@ local SOUND_FADE_DURATION = 10 * 1000
 
 -- variables
 local sound = false
-local filePath = 'assets/sounds/blacknite.mp3'
+local filePath = 'assets/sounds/spiral.mp3'
 local animation = nil
 
 function playLoginMusic()
@@ -12,7 +12,6 @@ function playLoginMusic()
     if fileExists(filePath) then
       sound = playSound(filePath, true)
 
-      setSoundSpeed(sound, 0.97)
       setSoundVolume(sound, 0)
       setSoundPosition(sound, 56)
 

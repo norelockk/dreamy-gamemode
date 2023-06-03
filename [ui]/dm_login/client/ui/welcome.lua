@@ -21,40 +21,76 @@ local DETAILS = {
 welcomeUi = {}
 welcomeUi.data = {}
 welcomeUi.fonts = {}
+welcomeUi.loading = true
 welcomeUi.buttons = {}
 welcomeUi.textures = {}
-welcomeUi.editboxes = {}
 welcomeUi.animations = {}
+welcomeUi.characters = {}
 
-welcomeUi.init = function()
-  -- welcome fonts
-  welcomeUi.fonts.regular_small = UI:getUIFont('regular_small')
+local loadingRot = 0
 
-  -- adjust button sizes & positions
-  -- welcomeUi.data.btnSize = Vector2(140 / zoom, 52 / zoom)
-  -- welcomeUi.data.btnPos = {}
-  -- welcomeUi.data.btnPos.back = Vector2(50 / zoom, 460 / zoom)
+local function noCharactersInit()
+  welcomeUi.data.btnPos.create = Vector2(140 / zoom, 580 / zoom)
 
-  -- -- welcome buttons
-  -- welcomeUi.buttons.back = UI:createButton(-welcomeUi.data.btnPos.back.x, -welcomeUi.data.btnPos.back.y, welcomeUi.data.btnSize.x, welcomeUi.data.btnSize.y, 'Wróć do logowania', true)
+  -- register buttons
+  welcomeUi.buttons.create = UI:createButton(-welcomeUi.data.btnPos.create.x, -welcomeUi.data.btnPos.create.y, welcomeUi.data.btnSize.x, welcomeUi.data.btnSize.y, 'Załóż postać', true)
 
-  -- -- setup buttons
-  -- UI:setButtonFont(welcomeUi.buttons.back, welcomeUi.fonts.regular_small, 0.85 / zoom)
-
-  -- addEventHandler('gui:onClientClickButton', welcomeUi.buttons.back, welcomeUi.backToLogin)
-  addEventHandler('login:onClientResponse', resourceRoot, welcomeUi.response)
-end
-
-welcomeUi.render = function(alpha, offset)
+  -- setup buttons
   for btn in pairs(welcomeUi.buttons) do
     local button = welcomeUi.buttons[btn]
 
     if button and isElement(button) then
-      local offX = offset / zoom
+      UI:setButtonAlpha(button, 0)
+      UI:setButtonFont(button, welcomeUi.fonts.regular, 0.95 / zoom)
+    end
+  end
+
+  addEventHandler('gui:onClientClickButton', welcomeUi.buttons.create, function()
+    triggerEvent('login:onClientSwitchInterface', resourceRoot, 'createCharacter')
+  end)
+end
+
+welcomeUi.init = function()
+  -- register fonts
+  welcomeUi.fonts.semibold_big = UI:getUIFont('semibold_big')
+  welcomeUi.fonts.regular = UI:getUIFont('regular')
+
+  -- register textures
+  welcomeUi.textures.loading = dxCreateTexture('assets/images/ui/loading.png')
+  welcomeUi.textures.sadface = dxCreateTexture('assets/images/ui/sadface.png')
+
+  -- adjust button sizes & positions
+  welcomeUi.data.btnPos = {}
+  welcomeUi.data.btnSize = Vector2(160 / zoom, 52 / zoom)
+
+  addEventHandler('login:onClientResponse', resourceRoot, welcomeUi.response)
+  setTimer(triggerServerEvent, 1500, 1, 'login:sendRequest', resourceRoot, 'getPlayerCharacters')
+end
+
+welcomeUi.render = function(alpha, offset)
+  local offX = offset / zoom
+
+  for btn in pairs(welcomeUi.buttons) do
+    local button = welcomeUi.buttons[btn]
+
+    if button and isElement(button) then
       local x, y = welcomeUi.data.btnPos[btn].x + offX, welcomeUi.data.btnPos[btn].y
 
       UI:setButtonAlpha(button, alpha)
       UI:setButtonPosition(button, x, y)
+    end
+  end
+
+  if welcomeUi.loading then
+    loadingRot = loadingRot - 10
+
+    dxDrawImage(190 / zoom + offX, 440 / zoom, 65 / zoom, 65 / zoom, welcomeUi.textures.loading, loadingRot, 0, 0, tocolor(0, 0, 0, 255 * alpha))
+  else
+    if #welcomeUi.characters == 0 and not welcomeUi.list then
+      dxDrawText('Brak postaci', 125 / zoom + offX, 505 / zoom, 125 / zoom + offX, 0, tocolor(12, 12, 12, 255 * alpha), 1 / zoom, welcomeUi.fonts.semibold_big)
+      dxDrawImage(190 / zoom + offX, 440 / zoom, 65 / zoom, 65 / zoom, welcomeUi.textures.sadface, 0, 0, 0, tocolor(0, 0, 0, 255 * alpha))
+
+      return
     end
   end
 end
@@ -71,16 +107,31 @@ welcomeUi.destroy = function()
       welcomeUi.buttons[button] = nil
     end
   end
+
+  for texture in pairs(welcomeUi.textures) do
+    local txt = welcomeUi.textures[texture]
+
+    if txt and isElement(txt) then
+      destroyElement(txt)
+    end
+
+    welcomeUi.textures[texture] = nil
+  end
 end
 
 welcomeUi.response = function(response)
-  if response and response.type == 'welcome' then
+  if response and response.type == 'welcome' and welcomeUi.loading then
     iprint('welcome client response', response)
 
     if response.success then
-      print('success response')
+      if #response.characters == 0 then
+        noCharactersInit()
+        print('no characters')
+      end
     else
       print('error response', response.message)
     end
+
+    welcomeUi.loading = not welcomeUi.loading
   end
 end
