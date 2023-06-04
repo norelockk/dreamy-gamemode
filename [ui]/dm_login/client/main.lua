@@ -101,9 +101,21 @@ local function initializeCurrentInterface()
   end
 end
 
-local function destroyCurrentInterface()
+local function destroyCurrentInterface(force)
   local currentUi = interfaces[activeInterface]
   if not currentUi then
+    return
+  end
+
+  if force then
+    if currentUi.forceDestroy then
+      currentUi.forceDestroy()
+    else
+      if currentUi.destroy then
+        currentUi.destroy()
+      end
+    end
+
     return
   end
 
@@ -259,7 +271,7 @@ local function renderUi()
   dxDrawImage(0, 0, screen.x, screen.y, textures.background, 0, 0, 0, tocolor(255, 255, 255, 255 * gAlpha))
 
   -- draw fog
-  exports['shader_fog']:color(110, 110, 110, 25 * gAlpha)
+  exports['shader_fog']:color(110, 110, 110, 15 * gAlpha)
   exports['shader_fog']:render()
 
   -- draw 'sidebar'
@@ -340,7 +352,7 @@ local function stop()
   end
 
   -- destroying current interface
-  destroyCurrentInterface()
+  destroyCurrentInterface(true)
 
   -- disabling music
   stopLoginMusic()
@@ -360,6 +372,7 @@ local function start()
   interfaces.login = {}
   interfaces.welcome = {}
   interfaces.register = {}
+  interfaces.createCharacter = {}
 
   interfaces.login.init = loginUi.init
   interfaces.login.title = "Logowanie"
@@ -372,11 +385,17 @@ local function start()
 będziesz odgrywał swoją rolę!]]
   interfaces.welcome.render = welcomeUi.render
   interfaces.welcome.destroy = welcomeUi.destroy
+  interfaces.welcome.forceDestroy = welcomeUi.forceDestroy
 
   interfaces.register.init = registerUi.init
   interfaces.register.title = "Rejestracja"
   interfaces.register.render = registerUi.render
   interfaces.register.destroy = registerUi.destroy
+
+  interfaces.createCharacter.init = createUi.init
+  interfaces.createCharacter.title = "Tworzenie postaci"
+  interfaces.createCharacter.render = createUi.render
+  interfaces.createCharacter.destroy = createUi.destroy
 
   -- setup fonts
   fonts.semibold_big = UI:getUIFont('semibold_big')
@@ -384,13 +403,14 @@ będziesz odgrywał swoją rolę!]]
 
   -- switching ui
   switchUi()
+
+  -- some basic stuff
   showCursor(true)
+  fadeCamera(false)
 
   -- setting fog color and changing the behavior
   exports['shader_fog']:reload()
   exports['shader_fog']:color(110, 110, 110, 0)
-
-  fadeCamera(false)
 
   -- handle disable event
   addEventHandler('onClientResourceStop', resourceRoot, stop)

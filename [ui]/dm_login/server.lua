@@ -119,7 +119,7 @@ local function request(_type, data)
         iprint('unknown response', response)
       end).process()
     else
-      iprint(response)
+      triggerClientEvent(client, 'login:onClientResponse', resourceRoot, { type = 'welcome', success = true, characters = response })
     end
   end)
   .default(function()

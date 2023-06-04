@@ -22,6 +22,11 @@ enum CharacterClassEnum {
   ENTREPRENEUR
 }
 
+enum CharacterGenderEnum {
+  MALE
+  FEMALE
+}
+
 model Account {
   id Int @id @default(autoincrement())
 
@@ -52,9 +57,12 @@ model Character {
   // identification
   firstName String
   lastName  String
-  class     CharacterClassEnum @default(value: GANGSTER)
-  dead      Boolean            @default(value: false)
-  age       Int                @default(value: 21)
+  gender    CharacterGenderEnum @default(value: MALE)
+  weight    Int                 @default(value: 80)
+  growth    Int                 @default(value: 180)
+  class     CharacterClassEnum  @default(value: GANGSTER)
+  dead      Boolean             @default(value: false)
+  age       Int                 @default(value: 21)
 
   // stats
   bw     BigInt @default(value: 0)
@@ -63,4 +71,7 @@ model Character {
   health Float  @default(100.0)
 
   ownerId Int
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }

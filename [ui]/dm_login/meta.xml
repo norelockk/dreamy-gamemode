@@ -7,6 +7,8 @@
   <file src='assets/images/background.png' />
   <file src='assets/images/ui/loading.png' />
   <file src='assets/images/ui/sadface.png' />
+  <file src='assets/images/ui/list_active.png' />
+  <file src='assets/images/ui/list_default.png' />
   <file src='assets/images/ui/icons/user.png' />
   <file src='assets/images/ui/icons/email.png' />
   <file src='assets/images/ui/icons/password.png' />
@@ -27,6 +29,7 @@
   <script src='client/ui/login.lua' type='client' />
   <script src='client/ui/welcome.lua' type='client' />
   <script src='client/ui/register.lua' type='client' />
+  <script src='client/ui/create.lua' type='client' />
 
   <!-- main stuff -->
   <script src='client/camera.lua' type='client' />
