@@ -33,7 +33,7 @@ local function createCharPreview(characterData)
 
   welcomeUi.character.preview = {}
   welcomeUi.character.preview.main = exports['obj_preview']:createObjectPreview(welcomeUi.character.model, 0, 0, 0, 1, 1, 1, 1)
-  
+
   exports['obj_preview']:setAlpha(welcomeUi.character.preview.main, 0)
   exports['obj_preview']:setRotation(welcomeUi.character.preview.main, 0, 0, 180)
 
@@ -200,11 +200,15 @@ welcomeUi.onListClick = function()
   local selected = UI:getListSelectedItem(welcomeUi.list)
   local allItems = UI:getListAllItemsCount(welcomeUi.list)
 
-  if selected == allItems then
-    destroyCurrentCharPreview(false)
-    triggerEvent('login:onClientSwitchInterface', resourceRoot, 'createCharacter')
+  -- if we are not at limit, still handle moving to creating character
+  local limit = #welcomeUi.characters >= 3
+  if not limit then
+    if selected == allItems then
+      destroyCurrentCharPreview(false)
+      triggerEvent('login:onClientSwitchInterface', resourceRoot, 'createCharacter')
 
-    return
+      return
+    end
   end
 
   local characterSelected = welcomeUi.characters[selected]
