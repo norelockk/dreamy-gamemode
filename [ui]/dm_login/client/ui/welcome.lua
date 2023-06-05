@@ -121,10 +121,16 @@ local function charactersInit(characters)
 
   if welcomeUi.list and isElement(welcomeUi.list) then
     for index, character in ipairs(welcomeUi.characters) do
+      if character.dead == 1 then return end
+
       UI:addListItem(welcomeUi.list, string.format('%s %s', character.firstName, character.lastName))
     end
 
-    UI:addListItem(welcomeUi.list, '+ Stwórz kolejną postać')
+    -- check character limit
+    local limit = #welcomeUi.characters >= 3
+    if not limit then
+      UI:addListItem(welcomeUi.list, '+ Stwórz kolejną postać')
+    end
 
     addEventHandler('gui:onClientClickList', welcomeUi.list, welcomeUi.onListClick)
   end
@@ -321,9 +327,9 @@ welcomeUi.destroy = function()
   end
   
   if welcomeUi.list then
+    removeEventHandler('gui:onClientClickList', welcomeUi.list, welcomeUi.onListClick)
     UI:destroyList(welcomeUi.list)
 
-    removeEventHandler('gui:onClientClickList', welcomeUi.list, welcomeUi.onListClick)
     welcomeUi.list = nil
   end
 
@@ -343,9 +349,9 @@ welcomeUi.forceDestroy = function()
   end
 
   if welcomeUi.list then
+    removeEventHandler('gui:onClientClickList', welcomeUi.list, welcomeUi.onListClick)
     UI:destroyList(welcomeUi.list)
 
-    removeEventHandler('gui:onClientClickList', welcomeUi.list, welcomeUi.onListClick)
     welcomeUi.list = nil
   end
 

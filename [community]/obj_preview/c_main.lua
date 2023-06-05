@@ -20,7 +20,6 @@ function objectPreview:create(element,rotX,rotY,rotZ,projPosX,projPosY,projSizeX
 		projPosX, projPosY, projSizeX, projSizeY = projPosX / scx, projPosY / scy, projSizeX / scx, projSizeY / scy
 	end
 	local elementType = getElementType(element)
-	outputDebugString('objPrev: Identified element as: '..tostring(elementType))
 	if elementType =="ped" or elementType =="player" then 
 		elementType = "ped"
 	end
@@ -67,16 +66,13 @@ function objectPreview:create(element,rotX,rotY,rotZ,projPosX,projPosY,projSizeX
 
 	if new.isSecondRT then
 		if not isMRTShaderSupported then
-			outputDebugString('objPrev: Can not create a preview. MRT in shaders not supported')
 			return false
 		end
-		outputDebugString('objPrev: Creating fx_pre_'..elementType..'.fx')
 		new.shader[1] = dxCreateShader("fx/fx_pre_"..elementType..".fx", 0, 0, false, "all")
 		if not glRenderTarget then
 			glRenderTarget = dxCreateRenderTarget( scx, scy, true )
 		end
 	else
-		outputDebugString('objPrev: Creating fx_pre_'..elementType..'_noMRT.fx')
 		new.shader[1] = dxCreateShader("fx/fx_pre_"..elementType.."_noMRT.fx", 0, 0, false, "all")	
 	end
 	if not new.shader[1] then 
@@ -104,7 +100,6 @@ function objectPreview:create(element,rotX,rotY,rotZ,projPosX,projPosY,projSizeX
 	end
 	addEventHandler( "onClientPreRender", root, new.onPreRender, true, "low-5" )
     setmetatable(new, objectPreview_mt)
-	outputDebugString('objPrev: Created ID: '..new.renID..' for: '..tostring(elementType)) 
 	return new
 end
 
@@ -136,7 +131,6 @@ function objectPreview:destroy()
 		end
 		self.shader = nil
 	end
-	outputDebugString('objPrev: Destroyed ID: '..renID) 
 	self.element = nil
 end
 
@@ -144,17 +138,14 @@ function objectPreview:createTextureReplace(texElement, texName)
 	local elementNr = nil
 	if self.isSecondRT then
 		if not isMRTShaderSupported then
-			outputDebugString('objPrev: Can not create a preview. MRT in shaders not supported')
 			return false
 		end
-		outputDebugString('objPrev: Creating fx_pre_'..self.elementType..'_replace.fx')
 		elementNr = #self.shader + 1
 		self.shader[elementNr] = dxCreateShader("fx/fx_pre_"..self.elementType.."_replace.fx", 0, 0, false, "all")
 		if not glRenderTarget then
 			glRenderTarget = dxCreateRenderTarget( scx, scy, true )
 		end
 	else
-		outputDebugString('objPrev: Creating fx_pre_'..self.elementType..'_replace_noMRT.fx')
 		self.shader[elementNr] = dxCreateShader("fx/fx_pre_"..self.elementType.."_replace_noMRT.fx", 0, 0, false, "all")	
 	end
 	if not self.shader[elementNr] then 
@@ -277,7 +268,6 @@ end
 
 function objectPreview:saveToFile(filePath)
 	if not isMRTShaderSupported or not self.isSecondRT or not isElement(self.element) then
-			outputDebugString('objPrev : saveRTToFile fail (non MRT object or MRT not supported) !')
 		return false 
 	end
 	if glRenderTarget then
@@ -285,7 +275,6 @@ function objectPreview:saveToFile(filePath)
 		projPosX, projPosY, projSizeX, projSizeY = toint(projPosX * scx), toint(projPosY * scy), toint(projSizeX * scx), toint(projSizeY * scy)
 		local rtPixels = dxGetTexturePixels ( glRenderTarget, projPosX, projPosY, projSizeX, projSizeY)
 		if not rtPixels then
-			outputDebugString('objPrev : saveRTToFile fail (could not get texture pixels) !')
 			return false 
 		end
 		rtPixels = dxConvertPixels(rtPixels, 'png')
@@ -294,13 +283,10 @@ function objectPreview:saveToFile(filePath)
 		isValid = fileWrite(file, rtPixels) and isValid
 		isValid = fileClose(file) and isValid
 		if not isValid then
-			outputDebugString('objPrev : saveRTToFile fail (could not save pixels to file) !')
 			return false
 		end
-		outputDebugString('objPrev : saveRTToFile to: '..filePath)
 		return isValid
 	else
-		outputDebugString('objPrev : saveRTToFile fail (render target error) !')
 		return false	
 	end
 	return false
@@ -384,7 +370,6 @@ function getRTarget()
 	if glRenderTarget then
 		return glRenderTarget
 	else
-		outputDebugString('objPrev : getRenderTarget fail (no render target) !')
 		return false
 	end
 end	
@@ -429,19 +414,16 @@ addEventHandler( "onClientHUDRender", root, function()
 	if (isMRTUsed == false) and glRenderTarget then
 		destroyElement( glRenderTarget )
 		glRenderTarget = nil
-		outputDebugString('objPrev : no MRT objects visible - destroyed RT')
 	end
 end, true, "low-10" )
 
 -- OnClientResourceStart
 addEventHandler("onClientResourceStart", getResourceRootElement( getThisResource()), function()
 	if not isMTAUpToDate("07331") then 
-		outputChatBox('Object preview: Update your MTA 1.5 client. Download at nightly.mtasa.com',255,0,0) 
 		return 
 	end
 	isMRTShaderSupported = vCardNumRenderTargets() > 1
 	if not isMRTShaderSupported then 
-		outputChatBox('Object preview: Multiple RT in shader not supported',255,0,0) 
 		return 
 	end
 end)

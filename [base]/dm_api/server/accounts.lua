@@ -29,7 +29,7 @@ function createGameAccount(client, data)
 
   -- checking account limit per serial
   if VERIFY_ACCOUNT_SERIAL then
-    local accounts = #MYSQL:query(string.format('SELECT * FROM `account` WHERE `serial` = ? LIMIT %d', MAX_ACCOUNTS_PER_SERIAL), serial)
+    local accounts = #MYSQL:query(string.format('SELECT `id` FROM `account` WHERE `serial` = ? LIMIT %d', MAX_ACCOUNTS_PER_SERIAL), serial)
     if accounts >= MAX_ACCOUNTS_PER_SERIAL then
       return 'CLIENT_ACCOUNTS_LIMIT_REACHED'
     end

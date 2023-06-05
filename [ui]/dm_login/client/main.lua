@@ -237,10 +237,10 @@ local function renderLightData()
     end
   end
 
-  if kickDetected then
-    local currentFogSpeed = exports['shader_fog']:currentSpeed()
+  local currentFogSpeed = exports['shader_fog']:currentSpeed()
 
-    animations.kickAlpha = createAnimation(1, 0, 'Linear', 1500, function(a)
+  if kickDetected then
+    animations.kickAlpha = createAnimation(1, 0, 'InOutQuad', 1500, function(a)
       lightAlpha = a
     end, function()
       deleteAnimation(animations.kickAlpha)

@@ -5,7 +5,6 @@
 function isMTAUpToDate(vBuild)
 	local mtaVer = getVersion().sortable
 	local mtaBuild = mtaVer:sub(9)
-	outputDebugString("MTA Build: "..tostring(mtaBuild))
 	if mtaBuild < vBuild then
 		return false
 	else
@@ -15,7 +14,6 @@ end
 
 function vCardNumRenderTargets()
 	local numRTar = tostring(dxGetStatus().VideoCardNumRenderTargets)
-	outputDebugString("VideoCardNumRenderTargets: "..numRTar)
 	return tonumber(numRTar)
 end
 

@@ -11,6 +11,7 @@
   <export function='createGameAccount' type='server' />
   <export function='findPlayerByAccountId' type='server' />
   <export function='getAllGameCharacters' type='server' />
+  <export function='createGameCharacter' type='server' />
 
   <!-- server api -->
   <script src='server/main.lua' type='server' />

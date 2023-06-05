@@ -4,12 +4,10 @@
 
 function createObjectPreview(objElement,rotX,rotY,rotZ,projPosX,projPosY,projSizeX,projSizeY,...)
 	if not isElement(objElement) then
-		outputDebugString('objPrev : createObjectPreview fail (not an element) !')	
 		return false
 	end	
 	local elementType = getElementType(objElement)
-	if (not elementType =="vehicle" and not elementType =="object"  and not elementType =="ped") then 
-		outputDebugString('objPrev : createObjectPreview fail (not proper element) !')
+	if (not elementType =="vehicle" and not elementType =="object"  and not elementType =="ped") then
 		return false 
 	end
 	local reqParam = {rotX,rotY,rotZ,projPosX,projPosY,projSizeX,projSizeY}
@@ -21,7 +19,6 @@ function createObjectPreview(objElement,rotX,rotY,rotZ,projPosX,projPosY,projSiz
 	end
 	local optParam = {...}
 	if not isThisValid or (#optParam > 3 or #reqParam ~= 7 ) or (countParam ~= 7) then
-		outputDebugString('objPrev : createObjectPreview fail (not enough parameters) !')
 		return false 
 	end
 	local isRelative, postGui, isSecRT, isAtt = false, false, true, false
@@ -49,14 +46,12 @@ function createObjectPreview(objElement,rotX,rotY,rotZ,projPosX,projPosY,projSiz
 	if thisObj and true then 
 		return createElement("SOVelement", tostring(thisObj:getID()))
 	else
-		outputDebugString('objPrev : createObjectPreview fail (internal error) !')
 		return false
 	end
 end
 
 function destroyObjectPreview(w)
 	if not isElement(w) then 
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -71,17 +66,14 @@ function destroyObjectPreview(w)
 				end
 			end
 		end			
-		outputDebugString('objPrev : createObjectPreview fail (internal error) !')
 		return false
 	else	
-		outputDebugString('objPrev : destroyObjectPreview fail (improper element) !')
 		return false
 	end
 end
 
 function createTextureReplace(w,texElement,texName)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -107,20 +99,16 @@ function createTextureReplace(w,texElement,texName)
 					return instance:createTextureReplace(texElement, texName)
 				end
 			end
-			outputDebugString('objPrev: createTextureReplace fail (internal error) !')		
 			return false
 		end
-		outputDebugString('objPrev : createTextureReplace fail (improper element) !')
 		return false
 	else
-		outputDebugString('objPrev : createTextureReplace fail (improper parameters) !')
 		return false
 	end	
 end
 
 function setTextureReplaceTexture(w,elementNr,texElement)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -146,20 +134,16 @@ function setTextureReplaceTexture(w,elementNr,texElement)
 					return instance:setTextureReplaceTexture(elementNr, texElement)
 				end
 			end
-			outputDebugString('objPrev: setTextureReplaceTexture fail (internal error) !')		
 			return false
 		end
-		outputDebugString('objPrev : setTextureReplaceTexture fail (improper element) !')
 		return false
 	else
-		outputDebugString('objPrev : setTextureReplaceTexture fail (improper parameters) !')
 		return false
 	end	
 end
 
 function destroyTextureReplace(w,elementNr)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -177,41 +161,33 @@ function destroyTextureReplace(w,elementNr)
 				if instance then
 					return instance:destroyTextureReplace(elementNr)
 				end
-			end
-			outputDebugString('objPrev: destroyTextureReplace fail (internal error) !')		
+			end		
 			return false
 		end
-		outputDebugString('objPrev : destroyTextureReplace fail (improper element) !')
 		return false
 	else
-		outputDebugString('objPrev : destroyTextureReplace fail (improper parameters) !')
 		return false
 	end	
 end
 
 function saveRTToFile(w,filePath)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	if not (dxGetStatus().AllowScreenUpload) then
-		outputDebugString('objPrev : saveRTToFile fail (AllowScreenUpload) !')
 		return false 
 	end
 	if type(filePath)~="string" then
-		outputDebugString('objPrev : saveRTToFile fail (no file path) !')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
 	local lastBit = string.len(filePath)
 	local texExt = string.sub(filePath, lastBit - 3, lastBit ) 
 	if texExt ~= '.png' then
-		outputDebugString('objPrev : saveRTToFile fail (file extention is not png) !')
 		return false 
 	end
 	local texName = string.sub(filePath, string.len( 1, lastBit - 4 ))
 	if string.len(texName) < 1 then
-		outputDebugString('objPrev : saveRTToFile fail (wrong tex name length) !')
 		return false 
 	end
 	local outPath = ':'..getResourceName(sourceResource)..'/'..filePath	
@@ -221,18 +197,15 @@ function saveRTToFile(w,filePath)
 			if instance then
 				return instance:saveToFile(outPath)
 			end
-		end
-		outputDebugString('objPrev: saveToFile fail (internal error) !')		
+		end	
 		return false
 	else
-		outputDebugString('objPrev : saveRTToFile fail (improper element) !')
 		return false
 	end
 end
 
 function setRotation(w,rotX,rotY,rotZ)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -251,20 +224,16 @@ function setRotation(w,rotX,rotY,rotZ)
 					return instance:setRotation(rotX,rotY,rotZ)
 				end
 			end
-			outputDebugString('objPrev: setRotation fail (internal error) !')		
 			return false
 		end
-		outputDebugString('objPrev : setRotation fail (improper element) !')
 		return false
 	else
-		outputDebugString('objPrev : setRotation fail (improper parameters) !')
 		return false
 	end	
 end
 
 function setProjection(w,projPosX,projPosY,projSizeX,projSizeY,...)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -277,7 +246,6 @@ function setProjection(w,projPosX,projPosY,projSizeX,projSizeY,...)
 	end
 	local optParam = {...}
 	if not isThisValid or (#optParam > 2 or #reqParam ~= 5 ) or (countParam ~= 5) then
-		outputDebugString('objPrev : setProjection fail (improper parameters) !')
 		return false 
 	end
 	local isRelative, postGui = false, false
@@ -298,17 +266,14 @@ function setProjection(w,projPosX,projPosY,projSizeX,projSizeY,...)
 				return instance:setProjection(projPosX,projPosY,projSizeX,projSizeY,postGui,isRelative)
 			end
 		end
-		outputDebugString('objPrev : setProjection fail (internal error) !')
 		return false
 	else
-		outputDebugString('objPrev : setProjection fail (improper element) !')
 		return false
 	end
 end
 
 function setDistanceSpread(w,zSpread)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -327,21 +292,17 @@ function setDistanceSpread(w,zSpread)
 					return instance:setDistanceSpread(zSpread)
 				end
 			end
-			outputDebugString('objPrev : setDistanceSpread fail (internal error) !')
 			return false
-		else
-			outputDebugString('objPrev : setDistanceSpread fail (improper element) !')		
+		else		
 			return false
 		end
 	else
-		outputDebugString('objPrev : setDistanceSpread fail (improper parameters) !')
 		return false
 	end	
 end
 
 function setPositionOffsets(w,offsX,offsY,offsZ)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -360,21 +321,17 @@ function setPositionOffsets(w,offsX,offsY,offsZ)
 					return instance:setPositionOffsets(offsX,offsY,offsZ)
 				end
 			end
-			outputDebugString('objPrev : setPositionOffsets fail (internal error) !')
 			return false
 		else
-			outputDebugString('objPrev : setPositionOffsets fail (improper element) !')	
 			return false
 		end
 	else
-		outputDebugString('objPrev : setPositionOffsets fail (improper parameters) !')	
 		return false
 	end	
 end
 
 function setRotationOffsets(w,offsX,offsY,offsZ)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -393,21 +350,17 @@ function setRotationOffsets(w,offsX,offsY,offsZ)
 					return instance:setRotationOffsets(offsX,offsY,offsZ)
 				end
 			end
-			outputDebugString('objPrev : setRotationOffsets fail (internal error) !')
 			return false
 		else
-			outputDebugString('objPrev : setRotationOffsets fail (improper element) !')
 			return false
 		end
 	else
-		outputDebugString('objPrev : setRotationOffsets fail (improper parameters) !')	
 		return false
 	end	
 end
 
 function setAlpha(w,alphaValue)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -420,14 +373,11 @@ function setAlpha(w,alphaValue)
 					return instance:setAlpha(alphaValue)
 				end
 			end
-			outputDebugString('objPrev : setAlpha fail (internal error) !')
 			return false
-		else
-			outputDebugString('objPrev : setAlpha fail (improper element) !')		
+		else	
 			return false
 		end
 	else
-		outputDebugString('objPrev : setAlpha fail (improper parameters) !')	
 		return false
 	end	
 end
@@ -447,14 +397,11 @@ function setAttached(w,isAtt)
 					return instance:setAttached(isAtt)
 				end
 			end
-			outputDebugString('objPrev : setAttached fail (internal error) !')
 			return false
-		else
-			outputDebugString('objPrev : setAttached fail (improper element) !')		
+		else	
 			return false
 		end
 	else
-		outputDebugString('objPrev : setAttached fail (improper parameters) !')	
 		return false
 	end	
 end
@@ -474,21 +421,17 @@ function setVisible(w,isVis)
 					return instance:setVisible(isVis)
 				end
 			end
-			outputDebugString('objPrev : setVisible fail (internal error) !')
 			return false
 		else
-			outputDebugString('objPrev : setVisible fail (improper element) !')		
 			return false
 		end
 	else
-		outputDebugString('objPrev : setVisible fail (improper parameters) !')	
 		return false
 	end	
 end
 
 function isVisible(w)
 	if not isElement(w) then
-		outputDebugString('objPrev: No element ID')
 		return false
 	end
 	local SOVelementID = tonumber(getElementID(w))
@@ -501,14 +444,11 @@ function isVisible(w)
 					return instance:isVisible()
 				end
 			end
-			outputDebugString('objPrev : setVisible fail (internal error) !')
 			return false
 		else
-			outputDebugString('objPrev : setVisible fail (improper element) !')		
 			return false
 		end
 	else
-		outputDebugString('objPrev : setVisible fail (improper parameters) !')	
 		return false
 	end	
 end
@@ -519,7 +459,6 @@ function getRenderTarget()
 	if outputRT then
 		return outputRT
 	else
-		outputDebugString('objPrev : getRenderTarget fail (No active render target) !')
 		return false
 	end
 end
@@ -527,7 +466,6 @@ end
 function setColorFilter(...)
 	local reqParam = {...}
 	if  (#reqParam ~= 8 )  then
-		outputDebugString('objPrev : setColorFilter fail (improper number of parameters) !')
 		return false 
 	else
 		local isThisValid = true
@@ -539,7 +477,6 @@ function setColorFilter(...)
 		if isThisValid then
 			return setCFilter(reqParam)
 		else
-			outputDebugString('objPrev : setColorFilter fail (improper type of parameters) !')
 			return false
 		end
 	end
