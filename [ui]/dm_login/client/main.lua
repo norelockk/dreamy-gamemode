@@ -313,13 +313,16 @@ local function switchUi()
     end
   else
     switchInterface('none')
-    endCameraMovement()
 
     if not animations.gAlpha and not animations.sidebarWidth then
       animations.gAlpha = createAnimation(gAlpha, 0, 'InOutQuad', 800, function(x)
         gAlpha = x
       end, function()
+        destroyCurrentInterface(false)
         stopLoginMusic()
+        showCursor(false)
+        fadeCamera(true, 5)
+        showChat(true)
         bindEvent('onClientRender', root, renderUi)
 
         deleteAnimation(animations.gAlpha)
@@ -365,8 +368,8 @@ local function start()
   textures.background = dxCreateTexture('assets/images/background.png')
 
   -- music
-  playLoginMusic()
-  sound = getLoginMusicElement()
+  -- playLoginMusic()
+  -- sound = getLoginMusicElement()
 
   -- initialize uis
   interfaces.login = {}

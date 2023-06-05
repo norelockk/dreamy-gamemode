@@ -10,6 +10,8 @@
   <export function='loginGameAccount' type='server' />
   <export function='createGameAccount' type='server' />
   <export function='findPlayerByAccountId' type='server' />
+  
+  <export function='spawnGameCharacter' type='server' />
   <export function='getAllGameCharacters' type='server' />
   <export function='createGameCharacter' type='server' />
 

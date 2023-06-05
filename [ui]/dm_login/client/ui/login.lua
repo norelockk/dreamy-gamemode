@@ -159,6 +159,7 @@ loginUi.sendLoginRequest = function()
     return
   end
 
+  NOTIFICATIONS:showNotification('Uwierzytelnianie..')
   triggerServerEvent('login:sendRequest', resourceRoot, 'login', { username = username, password = password })
   loginUi.switchUiLock(false)
 end
@@ -250,17 +251,10 @@ loginUi.response = function(response)
         saveLoginData(username, password)
       end
 
-      -- showCursor(false)
-      -- fadeCamera(false)
-      -- setTimer(function()
-      --   fadeCamera(true, 2)
-      --   setCameraTarget(localPlayer)
-      -- end, 3000, 1)
-      -- triggerEvent('login:onClientSwitchUi', resourceRoot)
       triggerEvent('login:onClientSwitchInterface', resourceRoot, 'welcome')
       removeEventHandler('onClientKey', root, loginUi.onClickKey)
 
-      NOTIFICATIONS:showNotification('Pomyślnie zalogowano.')
+      NOTIFICATIONS:showNotification('Pomyślnie zalogowano')
     else
       NOTIFICATIONS:showNotification(response.message)
       loginUi.switchUiLock(true)

@@ -4,6 +4,7 @@ local zoom = 1920 / screen.x
 
 -- ui
 local UI = exports.dm_gui
+local NOTIFICATIONS = exports.dm_notifications
 
 -- welcome screen
 welcomeUi = {}
@@ -32,19 +33,30 @@ local function createCharPreview(characterData)
 
   welcomeUi.character.preview = {}
   welcomeUi.character.preview.main = exports['obj_preview']:createObjectPreview(welcomeUi.character.model, 0, 0, 0, 1, 1, 1, 1)
+  
+  exports['obj_preview']:setAlpha(welcomeUi.character.preview.main, 0)
+  exports['obj_preview']:setRotation(welcomeUi.character.preview.main, 0, 0, 180)
+
   welcomeUi.character.preview.window = guiCreateWindow(((screen.x - 600 / zoom) / 2) + 650 / zoom, (screen.y - 900 / zoom) / 2, 600 / zoom, 900 / zoom, 'Character preview', false, false)
   
   local sw, sh = guiGetSize(welcomeUi.character.preview.window, true)
   local wx, wy = guiGetPosition(welcomeUi.character.preview.window, true)
+  exports['obj_preview']:setProjection(welcomeUi.character.preview.main, wx, wy, sw, sh, true, true)
 
   guiSetAlpha(welcomeUi.character.preview.window, 0)
   guiWindowSetSizable(welcomeUi.character.preview.window, false)
-
-  exports['obj_preview']:setAlpha(welcomeUi.character.preview.main, 0)
-  exports['obj_preview']:setRotation(welcomeUi.character.preview.main, 0, 0, 180)
-  exports['obj_preview']:setProjection(welcomeUi.character.preview.main, wx, wy, sw, sh, true, true)
   
   setPedAnimation(welcomeUi.character.model, 'rapping', 'rap_b_loop', -1, true, false)
+
+  -- create play button
+  welcomeUi.buttons.play = UI:createButton(welcomeUi.data.btnPos.play.x, welcomeUi.data.btnPos.play.y, 110 / zoom, 52 / zoom, 'Graj', true)
+  UI:setButtonFont(welcomeUi.buttons.play, welcomeUi.fonts.semibold_big, 0.60 / zoom)
+  UI:setButtonAlpha(welcomeUi.buttons.play, 0)
+
+  addEventHandler('gui:onClientClickButton', welcomeUi.buttons.play, function()
+    NOTIFICATIONS:showNotification(string.format('Wybrano postać %s %s', welcomeUi.character.data.firstName, welcomeUi.character.data.lastName))
+    triggerServerEvent('login:sendRequest', resourceRoot, 'spawnCharacter', { selectedCharacter = welcomeUi.character.data.id })
+  end)
 
   welcomeUi.animations.dataAlpha = createAnimation(dataAlpha, 1, 'InOutQuad', 600, function(x)
     dataAlpha = x
@@ -53,13 +65,6 @@ local function createCharPreview(characterData)
     welcomeUi.animations.dataAlpha = nil
 
     changes = false
-  end)
-
-  welcomeUi.animations.characterAlpha = createAnimation(0, 255, 'InOutQuad', 600, function(x)
-    exports['obj_preview']:setAlpha(welcomeUi.character.preview.main, x)
-  end, function()
-    deleteAnimation(welcomeUi.animations.characterAlpha)
-    welcomeUi.animations.characterAlpha = nil
   end)
 end
 
@@ -70,6 +75,10 @@ local function destroyCurrentCharPreview(force, callback)
 
   changes = true
 
+  if welcomeUi.buttons.play and isElement(welcomeUi.buttons.play) then
+    UI:setButtonEnabled(welcomeUi.buttons.play, false)
+  end
+
   welcomeUi.animations.dataAlpha = createAnimation(dataAlpha, 0, 'InOutQuad', 600, function(x)
     dataAlpha = x
   end, function()
@@ -77,6 +86,10 @@ local function destroyCurrentCharPreview(force, callback)
     welcomeUi.animations.dataAlpha = nil
 
     changes = false
+
+    if welcomeUi.buttons.play and isElement(welcomeUi.buttons.play) then
+      UI:destroyButton(welcomeUi.buttons.play)
+    end
   end)
 
   if force then
@@ -93,7 +106,6 @@ local function destroyCurrentCharPreview(force, callback)
   end
   
   welcomeUi.animations.characterAlpha = createAnimation(255, 0, 'InOutQuad', 600, function(x)
-    exports['obj_preview']:setAlpha(welcomeUi.character.preview.main, x)
   end, function()
     exports['obj_preview']:destroyObjectPreview(welcomeUi.character.preview.main)
 
@@ -106,7 +118,7 @@ local function destroyCurrentCharPreview(force, callback)
 
     if callback and type(callback) == 'function' then
       callback()
-    end 
+    end
   end)
 end
 
@@ -174,6 +186,8 @@ welcomeUi.init = function()
 
   -- adjust button sizes & positions
   welcomeUi.data.btnPos = {}
+  welcomeUi.data.btnPos.play = Vector2(((screen.x - 600 / zoom) / 2) + 45 / zoom, (screen.y + 400 / zoom) / 2)
+
   welcomeUi.data.btnSize = Vector2(160 / zoom, 52 / zoom)
 
   addEventHandler('login:onClientResponse', resourceRoot, welcomeUi.response)
@@ -258,10 +272,16 @@ welcomeUi.render = function(alpha, offset)
     local button = welcomeUi.buttons[btn]
 
     if button and isElement(button) then
-      local x, y = welcomeUi.data.btnPos[btn].x + offX, welcomeUi.data.btnPos[btn].y
+      if welcomeUi.data.btnPos[btn] then
+        local x, y = welcomeUi.data.btnPos[btn].x + offX, welcomeUi.data.btnPos[btn].y
 
-      UI:setButtonAlpha(button, alpha)
-      UI:setButtonPosition(button, x, y)
+        if btn ~= 'play' then
+          UI:setButtonPosition(button, x, y)
+          UI:setButtonAlpha(button, alpha)
+        else
+          UI:setButtonAlpha(button, alpha * dataAlpha)
+        end
+      end
     end
   end
 
@@ -294,6 +314,10 @@ welcomeUi.render = function(alpha, offset)
 
           offsetY = offsetY + 35 / zoom
         end
+      end
+
+      if welcomeUi.character.model or isElement(welcomeUi.character.model) then
+        exports['obj_preview']:setAlpha(welcomeUi.character.preview.main, 255 * alpha * dataAlpha)
       end
     end
 
@@ -372,7 +396,7 @@ welcomeUi.response = function(response)
 
       charactersInit(response.characters)
     else
-      print('error response', response.message)
+      NOTIFICATIONS:showNotification(response.message)
     end
   end
 end

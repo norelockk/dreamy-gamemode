@@ -107,6 +107,33 @@ local function request(_type, data)
     end)
     .process()
   end)
+  .case('spawnCharacter', function()
+    if not data.selectedCharacter or not type(data.selectedCharacter) == 'number' then
+      triggerClientEvent(client, 'login:onClientResponse', resourceRoot, { type = 'welcome', success = false, message = 'Nie wybrałeś postaci aby rozpocząć rozgrywkę' })
+      return
+    end
+
+    response = API:spawnGameCharacter(client, data.selectedCharacter)
+
+    switch(response)
+    .case('CLIENT_UNKNOWN_CHARACTER', function()
+      triggerClientEvent(client, 'login:onClientResponse', resourceRoot, { type = 'welcome', success = false, message = 'Nieznana postać, skontaktuj się z administracją' })
+    end)
+    .case('CLIENT_INVALID_CHARACTER_OWNER', function()
+      triggerClientEvent(client, 'login:onClientResponse', resourceRoot, { type = 'welcome', success = false, message = 'Nie jesteś właścicielem tej postaci' })
+    end)
+    .case('CLIENT_CHARACTER_ALREADY_SPAWNED', function()
+      triggerClientEvent(client, 'login:onClientResponse', resourceRoot, { type = 'welcome', success = false, message = 'Twoja postać jest już zespawnowana, skontaktuj się z administracją' })
+    end)
+    .case('CLIENT_CHARACTER_SPAWNED', function()
+      triggerClientEvent(client, 'login:onClientSwitchUi', resourceRoot)
+    end)
+    .default(function()
+      triggerClientEvent(client, 'login:onClientResponse', resourceRoot, { type = 'welcome', success = false, message = 'Nieznana odpowiedź API: ' .. response })
+      print('nieobsługiwana odpowiedź', response)
+    end)
+    .process()
+  end)
   .case('getPlayerCharacters', function()
     response = API:getAllGameCharacters(client)
 

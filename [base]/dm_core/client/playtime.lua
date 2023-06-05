@@ -2,27 +2,25 @@ local PAYDAY_DATA = {
   normal = {
     cash = 20,
     reputation = 1
-  },
-  premium = {
-    cash = 80,
-    reputation = 2
   }
 }
 
 local function payday()
-  local data = PAYDAY_DATA[getElementData(localPlayer, 'player:premium') and 'premium' or 'normal']
+  local data = PAYDAY_DATA['normal']
   giveGamePlayerMoney(data.cash)
 
-  local reputation = getElementData(localPlayer, 'player:reputation')
-  reputation = reputation + data.reputation
-  setElementData(localPlayer, 'player:reputation', reputation)
+  -- local reputation = getElementData(localPlayer, 'player:reputation')
+  -- reputation = reputation + data.reputation
+  -- setElementData(localPlayer, 'player:reputation', reputation)
+
+  exports.dm_notifications:showNotification(string.format('Na twoje konto wpłynęło %d$ za godzinę rozgrywki na serwerze.', data.cash), 10 * 1000)
 end
 
 local session = 0
 local playtime = -1
 
 local function calculate()
-  -- if not getElementData(localPlayer, 'character:spawned') then return end
+  if not getElementData(localPlayer, 'character:spawned') then return end
   if getElementData(localPlayer, 'player:away') then
     return
   end
@@ -54,7 +52,7 @@ end
 setTimer(calculate, 1000, 0)
 
 local function update()
-  -- if not getElementData(localPlayer, 'character:spawned') then return end
+  if not getElementData(localPlayer, 'character:spawned') then return end
   if getElementData(localPlayer, 'player:away') then
     return
   end

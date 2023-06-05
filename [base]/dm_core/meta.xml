@@ -5,12 +5,14 @@
   <!-- client-side scripts -->
   <script src='client/money.lua' type='client' />
   <script src='client/playtime.lua' type='client' />
+  <script src='client/gameplay.lua' type='client' />
   <script src='client/watermark.lua' type='client' />
 
   <!-- server-side scripts -->
   <script src='server/id.lua' type='server' />
   <script src='server/money.lua' type='server' />
   <script src='server/playtime.lua' type='server' />
+  <script src='server/gameplay.lua' type='server' />
 
   <!-- exports -->
   <export function='getGamePlayerMoney' type='shared' />

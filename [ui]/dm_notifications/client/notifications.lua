@@ -4,6 +4,8 @@
 local screen = Vector2(guiGetScreenSize())
 local zoom = screen.x < 1920 and math.min(2, 1920 / screen.x) or 1
 
+addEvent('notifications:addNotification', true)
+
 local function dxDrawRoundedRectangle(x, y, width, height, radius, color, postGUI, subPixelPositioning)
   dxDrawRectangle(x + radius, y + radius, width - (radius * 2), height - (radius * 2), color, postGUI, subPixelPositioning)
   dxDrawCircle(x + radius, y + radius, radius, 180, 270, color, color, 16, 1, postGUI)
@@ -165,6 +167,7 @@ local function createNotification(message, time)
     return id
   end
 end
+addEventHandler('notifications:addNotification', resourceRoot, createNotification)
 
 local function start()
   addEventHandler('onClientRender', root, renderNotifications)

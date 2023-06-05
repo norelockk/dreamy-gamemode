@@ -7,7 +7,7 @@ local filePath = 'assets/sounds/spiral.mp3'
 local animation = nil
 
 function playLoginMusic()
-  if animation then return end
+  -- if animation then return end
   if not sound and not isElement(sound) then
     if fileExists(filePath) then
       sound = playSound(filePath, true)
@@ -29,7 +29,7 @@ function playLoginMusic()
 end
 
 function stopLoginMusic()
-  if animation then return end
+  -- if animation then return end
   if sound and isElement(sound) then
     local currentVolume = getSoundVolume(sound)
 
